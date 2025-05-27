@@ -174,5 +174,13 @@
 		"local": "Fabrique",  
 		"cidade": "São Paulo",  
 		"flyer": "imagens/vltimas.jpg"  
-	}	
+	},
+	{  
+		"artista": "Brujeria",  
+		"data_inicio": "2025-10-14",  
+		"data_fim": "2025-10-14",
+		"local": "Jokers",  
+		"cidade": "Curitiba",  
+		"flyer": "imagens/brujeria.jpg"  
+	}
 ]
