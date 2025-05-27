@@ -32,7 +32,7 @@
       .then(shows => {
         // Ordena por data
         shows.sort((a, b) => new Date(a.data) - new Date(b.data));
-        // Filtra só shows futuros
+        // Filtra shows futuros
         const hoje = new Date();
         shows = shows.filter(show => new Date(show.data) >= hoje);
         const container = document.getElementById('shows');
