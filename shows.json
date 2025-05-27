@@ -278,5 +278,13 @@
 		"local": "Burning House",  
 		"cidade": "São Paulo",  
 		"flyer": "imagens/coc.jpg"  
+	},
+	{  
+		"artista": "Obituary",  
+		"data_inicio": "2026-02-22",  
+		"data_fim": "2026-02-22",
+		"local": "Tork N'Roll",  
+		"cidade": "Curitiba",  
+		"flyer": "imagens/obituary.png"  
 	}
 ]
