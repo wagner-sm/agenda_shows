@@ -86,5 +86,13 @@
 		"local": "Tork N'Roll",  
 		"cidade": "Curitiba",  
 		"flyer": "imagens/stryper.jpg"  
+	},
+	{  
+		"artista": "Testament",  
+		"data_inicio": "2026-08-17",  
+		"data_fim": "2026-08-17",
+		"local": "Tork N'Roll",  
+		"cidade": "Curitiba",  
+		"flyer": "imagens/testament.jpg"  
 	}
 ]
