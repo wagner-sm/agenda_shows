@@ -222,5 +222,13 @@
 		"local": "Basement Cultural",  
 		"cidade": "Curitiba",  
 		"flyer": "imagens/michale.png"  
+	},
+	{  
+		"artista": "Heidevolk e Nanowar of Steel",  
+		"data_inicio": "2025-11-02",  
+		"data_fim": "2025-11-02",
+		"local": "Stage Garden",  
+		"cidade": "Curitiba",  
+		"flyer": "imagens/odins.png"  
 	}
 ]
