@@ -182,5 +182,13 @@
 		"local": "Jokers",  
 		"cidade": "Curitiba",  
 		"flyer": "imagens/brujeria.jpg"  
+	},
+	{  
+		"artista": "Steven Wilson",  
+		"data_inicio": "2025-10-17",  
+		"data_fim": "2025-10-17",
+		"local": "Tokyo Marine Hall",  
+		"cidade": "São Paulo",  
+		"flyer": "imagens/sw.webp"  
 	}
 ]
