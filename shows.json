@@ -134,5 +134,14 @@
 		"local": "Autódromo de Interlagos",  
 		"cidade": "São Paulo",  
 		"flyer": "imagens/epica.jpg"  
-	}	
+	},
+	{  
+		"artista": "Zetro",  
+		"data_inicio": "2025-09-14",  
+		"data_fim": "2025-09-14",
+		"local": "Burning House",  
+		"cidade": "São Paulo",  
+		"flyer": "imagens/zetro.png"  
+	}
+	
 ]
