@@ -102,5 +102,13 @@
 		"local": "Basement Cultural",  
 		"cidade": "Curitiba",  
 		"flyer": "imagens/aris.png"  
+	},
+	{  
+		"artista": "The 69 Eyes",  
+		"data_inicio": "2026-08-31",  
+		"data_fim": "2026-08-31",
+		"local": "Fabrique",  
+		"cidade": "São Paulo",  
+		"flyer": "imagens/69.png"  
 	}
 ]
