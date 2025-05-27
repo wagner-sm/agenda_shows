@@ -166,5 +166,13 @@
 		"local": "Pedreira Paulo Leminski",  
 		"cidade": "Curitiba",  
 		"flyer": "imagens/as.jpg"  
-	}
+	},
+	{  
+		"artista": "Vltimas e Hate",  
+		"data_inicio": "2025-10-02",  
+		"data_fim": "2025-10-02",
+		"local": "Fabrique",  
+		"cidade": "São Paulo",  
+		"flyer": "imagens/vltimas.jpg"  
+	}	
 ]
