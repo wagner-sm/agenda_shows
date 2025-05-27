@@ -1,7 +1,8 @@
 [
 {  
     "artista": "Sepultura",  
-    "data": "2025-05-29",  
+    "data_inicio": "2025-05-29",  
+    "data_fim": "2025-05-29",
     "local": "Ópera de Arame",  
     "cidade": "Curitiba",  
     "flyer": "imagens/sepultura.jpg"  

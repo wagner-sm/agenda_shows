@@ -27,14 +27,22 @@
       return `${dia}/${mes}/${ano}`;
     }
 
+    function mostrarData(show) {
+      if (show.data_inicio === show.data_fim) {
+        return formatarData(show.data_inicio);
+      } else {
+        return `${formatarData(show.data_inicio)} a ${formatarData(show.data_fim)}`;
+      }
+    }
+
     fetch('shows.json')
       .then(res => res.json())
       .then(shows => {
-        // Ordena por data
-        shows.sort((a, b) => new Date(a.data) - new Date(b.data));
-        // Filtra shows futuros
+        // Ordena por data de início
+        shows.sort((a, b) => new Date(a.data_inicio) - new Date(b.data_inicio));
+        // Filtra só eventos futuros
         const hoje = new Date();
-        shows = shows.filter(show => new Date(show.data) >= hoje);
+        shows = shows.filter(show => new Date(show.data_fim) >= hoje);
         const container = document.getElementById('shows');
         if (shows.length === 0) {
           container.innerHTML = `<p style="color:#ffb347;font-size:1.2rem;text-align:center;">Nenhum show cadastrado no momento.</p>`;
@@ -45,7 +53,7 @@
               <img src="${show.flyer}" alt="Flyer do show de ${show.artista}">
               <div class="show-info">
                 <h2>${show.artista}</h2>
-                <p><strong>Data:</strong> ${formatarData(show.data)}</p>
+                <p><strong>Data:</strong> ${mostrarData(show)}</p>
                 <p><strong>Local:</strong> ${show.local}</p>
                 <p><strong>Cidade:</strong> ${show.cidade}</p>
               </div>
