@@ -198,5 +198,13 @@
 		"local": "VIP Station",  
 		"cidade": "São Paulo",  
 		"flyer": "imagens/visions.jpg"  
+	},
+	{  
+		"artista": "Stoned Jesus",  
+		"data_inicio": "2025-10-24",  
+		"data_fim": "2025-10-24",
+		"local": "Basement Cultural",  
+		"cidade": "Curitiba",  
+		"flyer": "imagens/stoned.png"  
 	}
 ]
