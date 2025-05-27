@@ -1,18 +1,18 @@
 [
-{  
-    "artista": "Sepultura",  
-    "data_inicio": "2025-05-29",  
-    "data_fim": "2025-05-29",
-    "local": "Ópera de Arame",  
-    "cidade": "Curitiba",  
-    "flyer": "imagens/sepultura.jpg"  
-},
-{  
-    "artista": "Zemial featuring Absu",  
-    "data_inicio": "2026-06-01",  
-    "data_fim": "2026-06-01",
-    "local": "Burning House",  
-    "cidade": "São Paulo",  
-    "flyer": "imagens/absu.jpg"  
-}
+	{  
+		"artista": "Sepultura",  
+		"data_inicio": "2025-05-29",  
+		"data_fim": "2025-05-29",
+		"local": "Ópera de Arame",  
+		"cidade": "Curitiba",  
+		"flyer": "imagens/sepultura.jpg"  
+	},
+	{  
+		"artista": "Zemial featuring Absu",  
+		"data_inicio": "2026-06-01",  
+		"data_fim": "2026-06-01",
+		"local": "Burning House",  
+		"cidade": "São Paulo",  
+		"flyer": "imagens/absu.jpg"  
+	}
 ]

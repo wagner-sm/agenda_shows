@@ -20,10 +20,9 @@
   <script>
     function formatarData(dataISO) {
       if (!dataISO) return '';
-      const data = new Date(dataISO);
-      const dia = String(data.getDate()).padStart(2, '0');
-      const mes = String(data.getMonth() + 1).padStart(2, '0');
-      const ano = data.getFullYear();
+      // Divide a string "YYYY-MM-DD" em partes
+      const [ano, mes, dia] = dataISO.split('-');
+      // Cria a data no fuso local (mês começa do zero)
       return `${dia}/${mes}/${ano}`;
     }
 
@@ -38,11 +37,15 @@
     fetch('shows.json')
       .then(res => res.json())
       .then(shows => {
-        // Ordena por data de in�cio
+        // Ordena por data de início
         shows.sort((a, b) => new Date(a.data_inicio) - new Date(b.data_inicio));
-        // Filtra s� eventos futuros
+        // Filtra ssó eventos futuros
         const hoje = new Date();
-        shows = shows.filter(show => new Date(show.data_fim) >= hoje);
+        shows = shows.filter(show => {
+          const [ano, mes, dia] = show.data_fim.split('-');
+          const dataFim = new Date(ano, mes - 1, dia);
+          return dataFim >= hoje;
+        });
         const container = document.getElementById('shows');
         if (shows.length === 0) {
           container.innerHTML = `<p style="color:#ffb347;font-size:1.2rem;text-align:center;">Nenhum show cadastrado no momento.</p>`;
