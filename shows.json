@@ -70,5 +70,13 @@
 		"local": "Ópera de Arame",  
 		"cidade": "Curitiba",  
 		"flyer": "imagens/angra.jpg"  
+	},
+	{  
+		"artista": "Edu Falaschi",  
+		"data_inicio": "2026-07-27",  
+		"data_fim": "2026-07-27",
+		"local": "Ópera de Arame",  
+		"cidade": "Curitiba",  
+		"flyer": "imagens/edu.webp"  
 	}
 ]
