@@ -254,5 +254,13 @@
 		"local": "Tork N'Roll",  
 		"cidade": "Curitiba",  
 		"flyer": "imagens/gh.png"  
+	},
+	{  
+		"artista": "Kanonenfieber",  
+		"data_inicio": "2025-12-07",  
+		"data_fim": "2025-12-07",
+		"local": "Carioca Club",  
+		"cidade": "São Paulo",  
+		"flyer": "imagens/kano.webp"  
 	}
 ]
