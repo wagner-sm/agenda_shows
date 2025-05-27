@@ -211,8 +211,16 @@
 		"artista": "Masterplan",  
 		"data_inicio": "2025-10-30",  
 		"data_fim": "2025-10-30",
-		"local": "Stagen Garden",  
+		"local": "Stage Garden",  
 		"cidade": "Curitiba",  
 		"flyer": "imagens/master.jpg"  
+	},
+	{  
+		"artista": "Michale Graves",  
+		"data_inicio": "2025-10-31",  
+		"data_fim": "2025-10-31",
+		"local": "Basement Cultural",  
+		"cidade": "Curitiba",  
+		"flyer": "imagens/michale.png"  
 	}
 ]
