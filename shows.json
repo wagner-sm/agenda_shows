@@ -126,5 +126,13 @@
 		"local": "Ópera de Arame",  
 		"cidade": "Curitiba",  
 		"flyer": "imagens/epica.jpg"  
-	}
+	},
+	{  
+		"artista": "The Town",  
+		"data_inicio": "2025-09-07",  
+		"data_fim": "2025-09-07",
+		"local": "Autódromo de Interlagos",  
+		"cidade": "São Paulo",  
+		"flyer": "imagens/epica.jpg"  
+	}	
 ]
