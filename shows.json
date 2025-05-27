@@ -22,5 +22,13 @@
 		"local": "Auditório do Iberapuera",  
 		"cidade": "São Paulo",  
 		"flyer": "imagens/best.webp"  
+	},
+	{  
+		"artista": "Kiko Loureiro e Marty Friedman",  
+		"data_inicio": "2026-06-08",  
+		"data_fim": "2026-06-08",
+		"local": "Ópera de Arame",  
+		"cidade": "Curitiba",  
+		"flyer": "imagens/kiko.jpg"  
 	}
 ]
