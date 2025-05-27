@@ -286,5 +286,13 @@
 		"local": "Tork N'Roll",  
 		"cidade": "Curitiba",  
 		"flyer": "imagens/obituary.png"  
+	},
+	{  
+		"artista": "Bangers Open Air",  
+		"data_inicio": "2026-04-25",  
+		"data_fim": "2026-04-26",
+		"local": "Memorial da América Latina",  
+		"cidade": "São Paulo",  
+		"flyer": ""  
 	}
 ]
