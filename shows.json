@@ -38,5 +38,13 @@
 		"local": "Auditório do Iberapuera",  
 		"cidade": "São Paulo",  
 		"flyer": "imagens/best2.jpg"  
+	},
+	{  
+		"artista": "Immolation",  
+		"data_inicio": "2026-06-15",  
+		"data_fim": "2026-06-15",
+		"local": "Hangar 110",  
+		"cidade": "São Paulo",  
+		"flyer": "imagens/immo.png"  
 	}
 ]
