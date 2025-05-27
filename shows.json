@@ -78,5 +78,13 @@
 		"local": "Ópera de Arame",  
 		"cidade": "Curitiba",  
 		"flyer": "imagens/edu.webp"  
+	},
+	{  
+		"artista": "Stryper, Narnia e Bride",  
+		"data_inicio": "2026-07-28",  
+		"data_fim": "2026-07-28",
+		"local": "Tork N'Roll",  
+		"cidade": "Curitiba",  
+		"flyer": "imagens/stryper.jpg"  
 	}
 ]
