@@ -91,7 +91,7 @@
 		"artista": "Testament",  
 		"data_inicio": "2025-08-17",  
 		"data_fim": "2025-08-17",
-		"local": "Tork N'Roll",  
+		"local": "++++",  
 		"cidade": "Curitiba",  
 		"flyer": "imagens/testament.jpg"  
 	},
@@ -150,5 +150,13 @@
 		"local": "Stage Garden",  
 		"cidade": "Curitiba",  
 		"flyer": "imagens/mc.jpg"  
-	}	
+	},
+	{  
+		"artista": "Anette Olzon",  
+		"data_inicio": "2025-09-22",  
+		"data_fim": "2025-09-22",
+		"local": "Tork N'Roll",  
+		"cidade": "Curitiba",  
+		"flyer": "imagens/anette.jpg"  
+	}
 ]
