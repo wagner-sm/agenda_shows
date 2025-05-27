@@ -118,5 +118,13 @@
 		"local": "VIP Station",  
 		"cidade": "São Paulo",  
 		"flyer": "imagens/setembro.jpg"  
+	},
+	{  
+		"artista": "Epica e Fleshgod Apocalypse",  
+		"data_inicio": "2026-09-07",  
+		"data_fim": "2026-09-07",
+		"local": "Ópera de Arame",  
+		"cidade": "Curitiba",  
+		"flyer": "imagens/epica.jpg"  
 	}
 ]
