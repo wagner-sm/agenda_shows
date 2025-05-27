@@ -262,5 +262,13 @@
 		"local": "Carioca Club",  
 		"cidade": "São Paulo",  
 		"flyer": "imagens/kano.webp"  
+	},
+	{  
+		"artista": "Grave Miasma",  
+		"data_inicio": "2025-12-10",  
+		"data_fim": "2025-12-10",
+		"local": "TBA",  
+		"cidade": "Curitiba",  
+		"flyer": "imagens/gm.png"  
 	}
 ]
