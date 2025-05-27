@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Agenda de Shows</title>
+  <style>
+    body { background: #181818; color: #fff; font-family: Arial; }
+    .shows-list { display: flex; flex-wrap: wrap; gap: 30px; justify-content: center; padding: 40px 10px; }
+    .show-card { background: #282828; border-radius: 10px; width: 320px; box-shadow: 0 2px 8px #0008; margin-bottom: 20px; }
+    .show-card img { width: 100%; height: 300px; object-fit: contain; background: #111; }
+    .show-info { padding: 15px; }
+    .show-info h2 { margin: 0 0 10px 0; color: #ffb347; }
+    .show-info p { margin: 3px 0; }
+    .show-info strong { color: #ffb347; }
+  </style>
+</head>
+<body>
+  <h1 style="text-align:center;">Agenda de Shows</h1>
+  <div class="shows-list" id="shows"></div>
+  <script>
+    function formatarData(dataISO) {
+      if (!dataISO) return '';
+      const data = new Date(dataISO);
+      const dia = String(data.getDate()).padStart(2, '0');
+      const mes = String(data.getMonth() + 1).padStart(2, '0');
+      const ano = data.getFullYear();
+      return `${dia}/${mes}/${ano}`;
+    }
+
+    fetch('shows.json')
+      .then(res => res.json())
+      .then(shows => {
+        // Ordena por data
+        shows.sort((a, b) => new Date(a.data) - new Date(b.data));
+        // Filtra só shows futuros
+        const hoje = new Date();
+        shows = shows.filter(show => new Date(show.data) >= hoje);
+        const container = document.getElementById('shows');
+        if (shows.length === 0) {
+          container.innerHTML = `<p style="color:#ffb347;font-size:1.2rem;text-align:center;">Nenhum show cadastrado no momento.</p>`;
+        }
+        shows.forEach(show => {
+          container.innerHTML += `
+            <div class="show-card">
+              <img src="${show.flyer}" alt="Flyer do show de ${show.artista}">
+              <div class="show-info">
+                <h2>${show.artista}</h2>
+                <p><strong>Data:</strong> ${formatarData(show.data)}</p>
+                <p><strong>Local:</strong> ${show.local}</p>
+                <p><strong>Cidade:</strong> ${show.cidade}</p>
+              </div>
+            </div>
+          `;
+        });
+      });
+  </script>
+</body>
+</html>
