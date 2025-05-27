@@ -270,5 +270,13 @@
 		"local": "TBA",  
 		"cidade": "Curitiba",  
 		"flyer": "imagens/gm.png"  
+	},
+	{  
+		"artista": "Corrosion of Conformity",  
+		"data_inicio": "2026-01-17",  
+		"data_fim": "2026-01-17",
+		"local": "Burning House",  
+		"cidade": "São Paulo",  
+		"flyer": "imagens/coc.jpg"  
 	}
 ]
