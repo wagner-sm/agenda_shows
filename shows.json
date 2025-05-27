@@ -230,5 +230,13 @@
 		"local": "Stage Garden",  
 		"cidade": "Curitiba",  
 		"flyer": "imagens/odins.png"  
+	},
+	{  
+		"artista": "Linkin Park",  
+		"data_inicio": "2025-11-05",  
+		"data_fim": "2025-11-05",
+		"local": "Estádio Couto Pereira",  
+		"cidade": "Curitiba",  
+		"flyer": "imagens/lp.jpg"  
 	}
 ]
