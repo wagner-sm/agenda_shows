@@ -46,5 +46,13 @@
 		"local": "Hangar 110",  
 		"cidade": "São Paulo",  
 		"flyer": "imagens/immo.png"  
+	},
+	{  
+		"artista": "Possessed",  
+		"data_inicio": "2026-06-22",  
+		"data_fim": "2026-06-22",
+		"local": "VIP Station",  
+		"cidade": "São Paulo",  
+		"flyer": "imagens/possessed.jpg"  
 	}
 ]
