@@ -206,5 +206,13 @@
 		"local": "Basement Cultural",  
 		"cidade": "Curitiba",  
 		"flyer": "imagens/stoned.png"  
+	},
+	{  
+		"artista": "Masterplan",  
+		"data_inicio": "2025-10-30",  
+		"data_fim": "2025-10-30",
+		"local": "Stagen Garden",  
+		"cidade": "Curitiba",  
+		"flyer": "imagens/master.jpg"  
 	}
 ]
