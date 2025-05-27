@@ -246,5 +246,13 @@
 		"local": "Basement Cultural",  
 		"cidade": "Curitiba",  
 		"flyer": "imagens/groza.png"  
+	},
+	{  
+		"artista": "Gleen Hughes",  
+		"data_inicio": "2025-11-18",  
+		"data_fim": "2025-11-18",
+		"local": "Tork N'Roll",  
+		"cidade": "Curitiba",  
+		"flyer": "imagens/gh.png"  
 	}
 ]
