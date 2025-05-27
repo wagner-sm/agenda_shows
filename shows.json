@@ -54,5 +54,13 @@
 		"local": "VIP Station",  
 		"cidade": "São Paulo",  
 		"flyer": "imagens/possessed.jpg"  
+	},
+	{  
+		"artista": "Crypta",  
+		"data_inicio": "2026-07-03",  
+		"data_fim": "2026-07-03",
+		"local": "VIP Station",  
+		"cidade": "São Paulo",  
+		"flyer": "imagens/crypta.webp"  
 	}
 ]
