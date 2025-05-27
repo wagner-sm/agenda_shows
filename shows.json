@@ -190,5 +190,13 @@
 		"local": "Tokyo Marine Hall",  
 		"cidade": "São Paulo",  
 		"flyer": "imagens/sw.webp"  
+	},
+	{  
+		"artista": "Visions of Rock",  
+		"data_inicio": "2025-10-18",  
+		"data_fim": "2025-10-18",
+		"local": "VIP Station",  
+		"cidade": "São Paulo",  
+		"flyer": "imagens/visions.jpg"  
 	}
 ]
