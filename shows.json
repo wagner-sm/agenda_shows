@@ -94,5 +94,13 @@
 		"local": "Tork N'Roll",  
 		"cidade": "Curitiba",  
 		"flyer": "imagens/testament.jpg"  
+	},
+	{  
+		"artista": "The Aristocrats",  
+		"data_inicio": "2026-08-20",  
+		"data_fim": "2026-08-20",
+		"local": "Basement Cultural",  
+		"cidade": "Curitiba",  
+		"flyer": "imagens/aris.png"  
 	}
 ]
