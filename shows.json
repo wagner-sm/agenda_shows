@@ -62,5 +62,13 @@
 		"local": "Stage Garden",  
 		"cidade": "Curitiba",  
 		"flyer": "imagens/crypta.webp"  
+	},
+	{  
+		"artista": "Angra e Viper",  
+		"data_inicio": "2026-07-18",  
+		"data_fim": "2026-07-18",
+		"local": "Ópera de Arame",  
+		"cidade": "Curitiba",  
+		"flyer": "imagens/angra.jpg"  
 	}
 ]
