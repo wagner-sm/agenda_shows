@@ -238,5 +238,13 @@
 		"local": "Estádio Couto Pereira",  
 		"cidade": "Curitiba",  
 		"flyer": "imagens/lp.jpg"  
+	},
+	{  
+		"artista": "Groza e Outlaw",  
+		"data_inicio": "2025-11-14",  
+		"data_fim": "2025-11-14",
+		"local": "Basement Cultural",  
+		"cidade": "Curitiba",  
+		"flyer": "imagens/groza.png"  
 	}
 ]
