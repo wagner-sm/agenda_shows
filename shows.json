@@ -9,120 +9,120 @@
 	},
 	{  
 		"artista": "Zemial featuring Absu",  
-		"data_inicio": "2026-06-01",  
-		"data_fim": "2026-06-01",
+		"data_inicio": "2025-06-01",  
+		"data_fim": "2025-06-01",
 		"local": "Burning House",  
 		"cidade": "São Paulo",  
 		"flyer": "imagens/absu.jpg"  
 	},
 	{  
 		"artista": "Best of Blues and Rock",  
-		"data_inicio": "2026-06-07",  
-		"data_fim": "2026-06-08",
+		"data_inicio": "2025-06-07",  
+		"data_fim": "2025-06-08",
 		"local": "Auditório do Iberapuera",  
 		"cidade": "São Paulo",  
 		"flyer": "imagens/best.webp"  
 	},
 	{  
 		"artista": "Kiko Loureiro e Marty Friedman",  
-		"data_inicio": "2026-06-08",  
-		"data_fim": "2026-06-08",
+		"data_inicio": "2025-06-08",  
+		"data_fim": "2025-06-08",
 		"local": "Ópera de Arame",  
 		"cidade": "Curitiba",  
 		"flyer": "imagens/kiko.jpg"  
 	},
 	{  
 		"artista": "Best of Blues and Rock",  
-		"data_inicio": "2026-06-14",  
-		"data_fim": "2026-06-15",
+		"data_inicio": "2025-06-14",  
+		"data_fim": "2025-06-15",
 		"local": "Auditório do Iberapuera",  
 		"cidade": "São Paulo",  
 		"flyer": "imagens/best2.jpg"  
 	},
 	{  
 		"artista": "Immolation",  
-		"data_inicio": "2026-06-15",  
-		"data_fim": "2026-06-15",
+		"data_inicio": "2025-06-15",  
+		"data_fim": "2025-06-15",
 		"local": "Hangar 110",  
 		"cidade": "São Paulo",  
 		"flyer": "imagens/immo.png"  
 	},
 	{  
 		"artista": "Possessed",  
-		"data_inicio": "2026-06-22",  
-		"data_fim": "2026-06-22",
+		"data_inicio": "2025-06-22",  
+		"data_fim": "2025-06-22",
 		"local": "VIP Station",  
 		"cidade": "São Paulo",  
 		"flyer": "imagens/possessed.jpg"  
 	},
 	{  
 		"artista": "Crypta",  
-		"data_inicio": "2026-07-03",  
-		"data_fim": "2026-07-03",
+		"data_inicio": "2025-07-03",  
+		"data_fim": "2025-07-03",
 		"local": "Stage Garden",  
 		"cidade": "Curitiba",  
 		"flyer": "imagens/crypta.webp"  
 	},
 	{  
 		"artista": "Angra e Viper",  
-		"data_inicio": "2026-07-18",  
-		"data_fim": "2026-07-18",
+		"data_inicio": "2025-07-18",  
+		"data_fim": "2025-07-18",
 		"local": "Ópera de Arame",  
 		"cidade": "Curitiba",  
 		"flyer": "imagens/angra.jpg"  
 	},
 	{  
 		"artista": "Edu Falaschi",  
-		"data_inicio": "2026-07-27",  
-		"data_fim": "2026-07-27",
+		"data_inicio": "2025-07-27",  
+		"data_fim": "2025-07-27",
 		"local": "Ópera de Arame",  
 		"cidade": "Curitiba",  
 		"flyer": "imagens/edu.webp"  
 	},
 	{  
 		"artista": "Stryper, Narnia e Bride",  
-		"data_inicio": "2026-07-28",  
-		"data_fim": "2026-07-28",
+		"data_inicio": "2025-07-28",  
+		"data_fim": "2025-07-28",
 		"local": "Tork N'Roll",  
 		"cidade": "Curitiba",  
 		"flyer": "imagens/stryper.jpg"  
 	},
 	{  
 		"artista": "Testament",  
-		"data_inicio": "2026-08-17",  
-		"data_fim": "2026-08-17",
+		"data_inicio": "2025-08-17",  
+		"data_fim": "2025-08-17",
 		"local": "Tork N'Roll",  
 		"cidade": "Curitiba",  
 		"flyer": "imagens/testament.jpg"  
 	},
 	{  
 		"artista": "The Aristocrats",  
-		"data_inicio": "2026-08-20",  
-		"data_fim": "2026-08-20",
+		"data_inicio": "2025-08-20",  
+		"data_fim": "2025-08-20",
 		"local": "Basement Cultural",  
 		"cidade": "Curitiba",  
 		"flyer": "imagens/aris.png"  
 	},
 	{  
 		"artista": "The 69 Eyes",  
-		"data_inicio": "2026-08-31",  
-		"data_fim": "2026-08-31",
+		"data_inicio": "2025-08-31",  
+		"data_fim": "2025-08-31",
 		"local": "Fabrique",  
 		"cidade": "São Paulo",  
 		"flyer": "imagens/69.jpg"  
 	},
 	{  
 		"artista": "Setembro Negro",  
-		"data_inicio": "2026-09-05",  
-		"data_fim": "2026-09-07",
+		"data_inicio": "2025-09-05",  
+		"data_fim": "2025-09-07",
 		"local": "VIP Station",  
 		"cidade": "São Paulo",  
 		"flyer": "imagens/setembro.jpg"  
 	},
 	{  
 		"artista": "Epica e Fleshgod Apocalypse",  
-		"data_inicio": "2026-09-07",  
-		"data_fim": "2026-09-07",
+		"data_inicio": "2025-09-07",  
+		"data_fim": "2025-09-07",
 		"local": "Ópera de Arame",  
 		"cidade": "Curitiba",  
 		"flyer": "imagens/epica.jpg"  
