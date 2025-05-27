@@ -30,5 +30,13 @@
 		"local": "Ópera de Arame",  
 		"cidade": "Curitiba",  
 		"flyer": "imagens/kiko.jpg"  
+	},
+	{  
+		"artista": "Best of Blues and Rock",  
+		"data_inicio": "2026-06-14",  
+		"data_fim": "2026-06-15",
+		"local": "Auditório do Iberapuera",  
+		"cidade": "São Paulo",  
+		"flyer": "imagens/best2.jpg"  
 	}
 ]
