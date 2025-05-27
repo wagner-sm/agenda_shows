@@ -14,5 +14,13 @@
 		"local": "Burning House",  
 		"cidade": "São Paulo",  
 		"flyer": "imagens/absu.jpg"  
+	},
+	{  
+		"artista": "Best of Blues and Rock",  
+		"data_inicio": "2026-06-07",  
+		"data_fim": "2026-06-08",
+		"local": "Auditório do Iberapuera",  
+		"cidade": "São Paulo",  
+		"flyer": "imagens/best.webp"  
 	}
 ]
