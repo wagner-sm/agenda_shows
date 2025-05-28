@@ -302,5 +302,13 @@
         "local": "Hangar 110",
         "cidade": "São Paulo",
         "flyer": "imagens/cs.jpg"
+    },
+	{
+        "artista": "Hammerfall",
+        "data_inicio": "2025-11-11",
+        "data_fim": "2025-11-11",
+        "local": "Tork N'Roll",
+        "cidade": "Curitiba",
+        "flyer": "imagens/hammer.jpg"
     }
 ]
