@@ -310,5 +310,14 @@
         "local": "Tork N'Roll",
         "cidade": "Curitiba",
         "flyer": "imagens/hammer.jpg"
+    },
+	{
+        "artista": "Behemoth e Deicide",
+        "data_inicio": "2025-09-19",
+        "data_fim": "2025-09-19",
+        "local": "Tork N'Roll",
+        "cidade": "Curitiba",
+        "flyer": "imagens/beh.jpg"
     }
+	
 ]
