@@ -21,7 +21,7 @@
         "data_fim": "2025-06-08",
         "local": "Auditório do Iberapuera",
         "cidade": "São Paulo",
-        "flyer": "imagens/best.webp"
+        "flyer": "imagens/best.png"
     },
     {
         "artista": "Kiko Loureiro e Marty Friedman",
@@ -29,7 +29,7 @@
         "data_fim": "2025-06-08",
         "local": "Ópera de Arame",
         "cidade": "Curitiba",
-        "flyer": "imagens/kiko.jpg"
+        "flyer": "imagens/kiko.png"
     },
     {
         "artista": "Best of Blues and Rock",
@@ -37,7 +37,7 @@
         "data_fim": "2025-06-15",
         "local": "Auditório do Iberapuera",
         "cidade": "São Paulo",
-        "flyer": "imagens/best2.jpg"
+        "flyer": "imagens/best2.png"
     },
     {
         "artista": "Immolation",
