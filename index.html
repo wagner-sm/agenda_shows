@@ -17,53 +17,57 @@
 <body>
   <h1 style="text-align:center;">Agenda de Shows</h1>
   <div class="shows-list" id="shows"></div>
-  <script>
-    function formatarData(dataISO) {
-      if (!dataISO) return '';
-      // Divide a string "YYYY-MM-DD" em partes
-      const [ano, mes, dia] = dataISO.split('-');
-      // Cria a data no fuso local (mês começa do zero)
-      return `${dia}/${mes}/${ano}`;
-    }
+  <<script>
+  function formatarData(dataISO) {
+    if (!dataISO) return '';
+    const [ano, mes, dia] = dataISO.split('-');
+    return `${dia}/${mes}/${ano}`;
+  }
 
-    function mostrarData(show) {
-      if (show.data_inicio === show.data_fim) {
-        return formatarData(show.data_inicio);
-      } else {
-        return `${formatarData(show.data_inicio)} a ${formatarData(show.data_fim)}`;
-      }
+  function mostrarData(show) {
+    if (show.data_inicio === show.data_fim) {
+      return formatarData(show.data_inicio);
+    } else {
+      return `${formatarData(show.data_inicio)} a ${formatarData(show.data_fim)}`;
     }
+  }
 
-    fetch('shows.json')
-      .then(res => res.json())
-      .then(shows => {
-        // Ordena por data de início
-        shows.sort((a, b) => new Date(a.data_inicio) - new Date(b.data_inicio));
-        // Filtra ssó eventos futuros
-        const hoje = new Date();
-        shows = shows.filter(show => {
-          const [ano, mes, dia] = show.data_fim.split('-');
-          const dataFim = new Date(ano, mes - 1, dia);
-          return dataFim >= hoje;
-        });
-        const container = document.getElementById('shows');
-        if (shows.length === 0) {
-          container.innerHTML = `<p style="color:#ffb347;font-size:1.2rem;text-align:center;">Nenhum show cadastrado no momento.</p>`;
-        }
-        shows.forEach(show => {
-          container.innerHTML += `
-            <div class="show-card">
-              <img src="${show.flyer}" alt="Flyer do show de ${show.artista}">
-              <div class="show-info">
-                <h2>${show.artista}</h2>
-                <p><strong>Data:</strong> ${mostrarData(show)}</p>
-                <p><strong>Local:</strong> ${show.local}</p>
-                <p><strong>Cidade:</strong> ${show.cidade}</p>
-              </div>
-            </div>
-          `;
-        });
+  fetch('shows.json')
+    .then(res => res.json())
+    .then(shows => {
+      // Ordena por data de início
+      shows.sort((a, b) => new Date(a.data_inicio) - new Date(b.data_inicio));
+      // Pega a data de hoje, zerando horas/minutos/segundos
+      const hoje = new Date();
+      hoje.setHours(0, 0, 0, 0);
+
+      // Filtra só eventos futuros ou que terminam hoje
+      shows = shows.filter(show => {
+        const [ano, mes, dia] = show.data_fim.split('-');
+        const dataFim = new Date(ano, mes - 1, dia);
+        dataFim.setHours(0, 0, 0, 0); // zera horas
+        return dataFim >= hoje;
       });
-  </script>
-</body>
-</html>
+
+      const container = document.getElementById('shows');
+      if (shows.length === 0) {
+        container.innerHTML = `<p style="color:#ffb347;font-size:1.2rem;text-align:center;">Nenhum show cadastrado no momento.</p>`;
+        return;
+      }
+
+      // Mostra todos os shows futuros
+      shows.forEach(show => {
+        container.innerHTML += `
+          <div class="show-card">
+            <img src="${show.flyer}" alt="Flyer do show de ${show.artista}">
+            <div class="show-info">
+              <h2>${show.artista}</h2>
+              <p><strong>Data:</strong> ${mostrarData(show)}</p>
+              <p><strong>Local:</strong> ${show.local}</p>
+              <p><strong>Cidade:</strong> ${show.cidade}</p>
+            </div>
+          </div>
+        `;
+      });
+    });
+</script>
