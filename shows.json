@@ -318,6 +318,14 @@
         "local": "Tork N'Roll",
         "cidade": "Curitiba",
         "flyer": "imagens/beh.jpg"
+    },
+	{
+        "artista": "Green Day",
+        "data_inicio": "2025-09-12",
+        "data_fim": "2025-09-12",
+        "local": "Ligga Arena",
+        "cidade": "Curitiba",
+        "flyer": "imagens/green.jpg"
     }
 	
 ]
