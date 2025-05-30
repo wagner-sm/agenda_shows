@@ -1,13 +1,5 @@
 [
     {
-        "artista": "Sepultura",
-        "data_inicio": "2025-05-29",
-        "data_fim": "2025-05-29",
-        "local": "Ópera de Arame",
-        "cidade": "Curitiba",
-        "flyer": "imagens/sepultura.jpg"
-    },
-    {
         "artista": "Absu featuring Zemial",
         "data_inicio": "2025-06-01",
         "data_fim": "2025-06-01",
@@ -303,7 +295,7 @@
         "cidade": "São Paulo",
         "flyer": "imagens/cs.jpg"
     },
-	{
+    {
         "artista": "Hammerfall",
         "data_inicio": "2025-11-11",
         "data_fim": "2025-11-11",
@@ -311,7 +303,7 @@
         "cidade": "Curitiba",
         "flyer": "imagens/hammer.png"
     },
-	{
+    {
         "artista": "Behemoth e Deicide",
         "data_inicio": "2025-09-19",
         "data_fim": "2025-09-19",
@@ -319,7 +311,7 @@
         "cidade": "Curitiba",
         "flyer": "imagens/beh.jpg"
     },
-	{
+    {
         "artista": "Green Day",
         "data_inicio": "2025-09-12",
         "data_fim": "2025-09-12",
@@ -327,5 +319,4 @@
         "cidade": "Curitiba",
         "flyer": "imagens/gd.jpg"
     }
-	
 ]
