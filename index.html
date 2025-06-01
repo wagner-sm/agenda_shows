@@ -147,8 +147,10 @@
           return;
         }
 
+        // MELHORIA: Montar o HTML em uma string e inserir de uma vez só
+        let html = '';
         shows.forEach(show => {
-          container.innerHTML += `
+          html += `
             <div class="show-card">
               <img src="${show.flyer}" alt="Flyer do show de ${show.artista}" onclick="abrirImagemModal('${show.flyer}')">
               <div class="show-info">
@@ -160,6 +162,7 @@
             </div>
           `;
         });
+        container.innerHTML = html;
       });
 
     // Modal JS
