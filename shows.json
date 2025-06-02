@@ -318,5 +318,13 @@
         "local": "TBA",
         "cidade": "São Paulo",
         "flyer": "imagens/sargeist.jpg"
+    },
+    {
+        "artista": "The Sisters of Mercy",
+        "data_inicio": "2025-06-18",
+        "data_fim": "2025-06-18",
+        "local": "Tokyo Marine Hall",
+        "cidade": "São Paulo",
+        "flyer": "imagens/sisters.jpg"
     }
 ]
