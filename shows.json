@@ -326,5 +326,13 @@
         "local": "Tokyo Marine Hall",
         "cidade": "São Paulo",
         "flyer": "imagens/sisters.jpg"
+    },
+    {
+        "artista": "Category 7",
+        "data_inicio": "2025-07-12",
+        "data_fim": "2025-07-12",
+        "local": "Manifesto Bar",
+        "cidade": "São Paulo",
+        "flyer": "imagens/category.jpg"
     }
 ]
