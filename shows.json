@@ -334,5 +334,13 @@
         "local": "Manifesto Bar",
         "cidade": "São Paulo",
         "flyer": "imagens/category.jpg"
+    },
+    {
+        "artista": "Cradle of Filth e Uada",
+        "data_inicio": "2025-08-22",
+        "data_fim": "2025-08-22",
+        "local": "Tork N'Roll",
+        "cidade": "Curitiba",
+        "flyer": "imagens/cradle.jpg"
     }
 ]
