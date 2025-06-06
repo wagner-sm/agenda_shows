@@ -358,5 +358,13 @@
         "local": "Stage Garden",
         "cidade": "Curitiba",
         "flyer": "imagens/vv.jpg"
+    },
+    {
+        "artista": "Guns N'Roses",
+        "data_inicio": "2025-10-28",
+        "data_fim": "2025-10-28",
+        "local": "Pedreira Paulo Leminski",
+        "cidade": "Curitiba",
+        "flyer": "imagens/guns.jpg"
     }
 ]
