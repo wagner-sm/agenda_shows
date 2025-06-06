@@ -366,5 +366,13 @@
         "local": "Pedreira Paulo Leminski",
         "cidade": "Curitiba",
         "flyer": "imagens/guns.jpg"
+    },
+    {
+        "artista": "Fabio Lione",
+        "data_inicio": "2026-01-29",
+        "data_fim": "2026-01-29",
+        "local": "Teatro Bom Jesus",
+        "cidade": "Curitiba",
+        "flyer": "imagens/fl.jpeg"
     }
 ]
