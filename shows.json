@@ -358,5 +358,13 @@
     "local": "Teatro Bom Jesus",
     "cidade": "Curitiba",
     "flyer": "imagens/fl.jpeg"
+  },
+  {
+    "artista": "Velho e Podridão",
+    "data_inicio": "2025-10-24",
+    "data_fim": "2025-10-24",
+    "local": "Basement Cultural",
+    "cidade": "Curitiba",
+    "flyer": "imagens/velho.jpg"
   }
 ]
