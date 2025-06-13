@@ -382,5 +382,13 @@
     "local": "TBA",
     "cidade": "São Paulo",
     "flyer": "imagens/marduk.jpg"
+  },
+  {
+    "artista": "Animals as Leaders",
+    "data_inicio": "2025-08-26",
+    "data_fim": "2025-08-26",
+    "local": "Teatro Bradesco",
+    "cidade": "São Paulo",
+    "flyer": "imagens/animal.png"
   }
 ]
