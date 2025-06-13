@@ -374,5 +374,13 @@
     "local": "Carioca Club",
     "cidade": "São Paulo",
     "flyer": "imagens/rof.png"
+  },
+  {
+    "artista": "Marduk",
+    "data_inicio": "2025-11-02",
+    "data_fim": "2025-11-02",
+    "local": "TBA",
+    "cidade": "São Paulo",
+    "flyer": "imagens/marduk.jpg"
   }
 ]
