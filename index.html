@@ -149,19 +149,19 @@
 
         // MELHORIA: Montar o HTML em uma string e inserir de uma vez só
         let html = '';
-        shows.forEach(show => {
-          html += `
-            <div class="show-card">
-              <img src="${show.flyer}" alt="Flyer do show de ${show.artista}" onclick="abrirImagemModal('${show.flyer}')">
-              <div class="show-info">
-                <h2>${show.artista}</h2>
-                <p><strong>Data:</strong> ${mostrarData(show)}</p>
-                <p><strong>Local:</strong> ${show.local}</p>
-                <p><strong>Cidade:</strong> ${show.cidade}</p>
-              </div>
-            </div>
-          `;
-        });
+        shows.forEach(show => {  
+		  html += `  
+			<div class="show-card">  
+			  <img src="imagens/${show.flyer}" alt="Flyer do show de ${show.artista}" onclick="abrirImagemModal('imagens/${show.flyer}')">  
+			  <div class="show-info">  
+				<h2>${show.artista}</h2>  
+				<p><strong>Data:</strong> ${mostrarData(show)}</p>  
+				<p><strong>Local:</strong> ${show.local}</p>  
+				<p><strong>Cidade:</strong> ${show.cidade}</p>  
+			  </div>  
+			</div>  
+		  `;  
+		});
         container.innerHTML = html;
       });
 

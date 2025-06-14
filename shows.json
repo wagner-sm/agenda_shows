@@ -5,7 +5,7 @@
     "data_fim": "2025-06-15",
     "local": "Auditório do Iberapuera",
     "cidade": "São Paulo",
-    "flyer": "imagens/best2.png"
+    "flyer": "best2.png"
   },
   {
     "artista": "Immolation",
@@ -13,7 +13,7 @@
     "data_fim": "2025-06-15",
     "local": "Hangar 110",
     "cidade": "São Paulo",
-    "flyer": "imagens/immo.png"
+    "flyer": "immo.png"
   },
   {
     "artista": "Possessed",
@@ -21,7 +21,7 @@
     "data_fim": "2025-06-19",
     "local": "Burning House",
     "cidade": "São Paulo",
-    "flyer": "imagens/possessed.jpg"
+    "flyer": "possessed.jpg"
   },
   {
     "artista": "Crypta",
@@ -29,7 +29,7 @@
     "data_fim": "2025-07-03",
     "local": "Stage Garden",
     "cidade": "Curitiba",
-    "flyer": "imagens/crypta.webp"
+    "flyer": "crypta.webp"
   },
   {
     "artista": "Angra e Viper",
@@ -37,7 +37,7 @@
     "data_fim": "2025-07-18",
     "local": "Ópera de Arame",
     "cidade": "Curitiba",
-    "flyer": "imagens/angra.jpg"
+    "flyer": "angra.jpg"
   },
   {
     "artista": "Edu Falaschi",
@@ -45,7 +45,7 @@
     "data_fim": "2025-07-27",
     "local": "Ópera de Arame",
     "cidade": "Curitiba",
-    "flyer": "imagens/edu.webp"
+    "flyer": "edu.webp"
   },
   {
     "artista": "Stryper, Narnia e Bride",
@@ -53,7 +53,7 @@
     "data_fim": "2025-07-28",
     "local": "Tork N'Roll",
     "cidade": "Curitiba",
-    "flyer": "imagens/stryper.jpg"
+    "flyer": "stryper.jpg"
   },
   {
     "artista": "Testament",
@@ -61,7 +61,7 @@
     "data_fim": "2025-08-17",
     "local": "Tork N'Roll",
     "cidade": "Curitiba",
-    "flyer": "imagens/testament.jpg"
+    "flyer": "testament.jpg"
   },
   {
     "artista": "The Aristocrats",
@@ -69,7 +69,7 @@
     "data_fim": "2025-08-20",
     "local": "Tork N'Roll",
     "cidade": "Curitiba",
-    "flyer": "imagens/aris.png"
+    "flyer": "aris.png"
   },
   {
     "artista": "The 69 Eyes",
@@ -77,7 +77,7 @@
     "data_fim": "2025-08-31",
     "local": "Fabrique",
     "cidade": "São Paulo",
-    "flyer": "imagens/69.jpg"
+    "flyer": "69.jpg"
   },
   {
     "artista": "Setembro Negro",
@@ -85,7 +85,7 @@
     "data_fim": "2025-09-07",
     "local": "VIP Station",
     "cidade": "São Paulo",
-    "flyer": "imagens/sn.jpg"
+    "flyer": "sn.jpg"
   },
   {
     "artista": "Epica e Fleshgod Apocalypse",
@@ -93,7 +93,7 @@
     "data_fim": "2025-09-07",
     "local": "Ópera de Arame",
     "cidade": "Curitiba",
-    "flyer": "imagens/epica.jpg"
+    "flyer": "epica.jpg"
   },
   {
     "artista": "The Town",
@@ -101,7 +101,7 @@
     "data_fim": "2025-09-07",
     "local": "Autódromo de Interlagos",
     "cidade": "São Paulo",
-    "flyer": "imagens/town.jpg"
+    "flyer": "town.jpg"
   },
   {
     "artista": "Zetro",
@@ -109,7 +109,7 @@
     "data_fim": "2025-09-14",
     "local": "Burning House",
     "cidade": "São Paulo",
-    "flyer": "imagens/zetro.png"
+    "flyer": "zetro.png"
   },
   {
     "artista": "Krisiun e Malovolent Creation",
@@ -117,7 +117,7 @@
     "data_fim": "2025-09-19",
     "local": "Stage Garden",
     "cidade": "Curitiba",
-    "flyer": "imagens/mc.jpg"
+    "flyer": "mc.jpg"
   },
   {
     "artista": "Anette Olzon",
@@ -125,7 +125,7 @@
     "data_fim": "2025-09-22",
     "local": "Tork N'Roll",
     "cidade": "Curitiba",
-    "flyer": "imagens/anette.jpg"
+    "flyer": "anette.jpg"
   },
   {
     "artista": "Avenged Sevenfold e Mr. Bungle",
@@ -133,7 +133,7 @@
     "data_fim": "2025-10-02",
     "local": "Pedreira Paulo Leminski",
     "cidade": "Curitiba",
-    "flyer": "imagens/as.jpg"
+    "flyer": "as.jpg"
   },
   {
     "artista": "Vltimas e Hate",
@@ -141,7 +141,7 @@
     "data_fim": "2025-10-02",
     "local": "Fabrique",
     "cidade": "São Paulo",
-    "flyer": "imagens/vltimas.jpg"
+    "flyer": "vltimas.jpg"
   },
   {
     "artista": "Brujeria",
@@ -149,7 +149,7 @@
     "data_fim": "2025-10-14",
     "local": "Jokers",
     "cidade": "Curitiba",
-    "flyer": "imagens/brujeria.png"
+    "flyer": "brujeria.png"
   },
   {
     "artista": "Steven Wilson",
@@ -157,7 +157,7 @@
     "data_fim": "2025-10-17",
     "local": "Tokyo Marine Hall",
     "cidade": "São Paulo",
-    "flyer": "imagens/sw.png"
+    "flyer": "sw.png"
   },
   {
     "artista": "Visions of Rock",
@@ -165,7 +165,7 @@
     "data_fim": "2025-10-18",
     "local": "VIP Station",
     "cidade": "São Paulo",
-    "flyer": "imagens/visions.jpg"
+    "flyer": "visions.jpg"
   },
   {
     "artista": "Stoned Jesus",
@@ -173,7 +173,7 @@
     "data_fim": "2025-10-24",
     "local": "Basement Cultural",
     "cidade": "Curitiba",
-    "flyer": "imagens/stoned.jpg"
+    "flyer": "stoned.jpg"
   },
   {
     "artista": "Masterplan",
@@ -181,7 +181,7 @@
     "data_fim": "2025-10-30",
     "local": "Stage Garden",
     "cidade": "Curitiba",
-    "flyer": "imagens/master.jpg"
+    "flyer": "master.jpg"
   },
   {
     "artista": "Michale Graves",
@@ -189,7 +189,7 @@
     "data_fim": "2025-10-31",
     "local": "Basement Cultural",
     "cidade": "Curitiba",
-    "flyer": "imagens/michale.png"
+    "flyer": "michale.png"
   },
   {
     "artista": "Heidevolk e Nanowar of Steel",
@@ -197,7 +197,7 @@
     "data_fim": "2025-11-02",
     "local": "Stage Garden",
     "cidade": "Curitiba",
-    "flyer": "imagens/odins.png"
+    "flyer": "odins.png"
   },
   {
     "artista": "Linkin Park",
@@ -205,7 +205,7 @@
     "data_fim": "2025-11-05",
     "local": "Estádio Couto Pereira",
     "cidade": "Curitiba",
-    "flyer": "imagens/lp.png"
+    "flyer": "lp.png"
   },
   {
     "artista": "Groza e Outlaw",
@@ -213,7 +213,7 @@
     "data_fim": "2025-11-14",
     "local": "Basement Cultural",
     "cidade": "Curitiba",
-    "flyer": "imagens/groza.jpg"
+    "flyer": "groza.jpg"
   },
   {
     "artista": "Gleen Hughes",
@@ -221,7 +221,7 @@
     "data_fim": "2025-11-18",
     "local": "Tork N'Roll",
     "cidade": "Curitiba",
-    "flyer": "imagens/gh.png"
+    "flyer": "gh.png"
   },
   {
     "artista": "Kanonenfieber",
@@ -229,7 +229,7 @@
     "data_fim": "2025-12-07",
     "local": "Carioca Club",
     "cidade": "São Paulo",
-    "flyer": "imagens/kano.png"
+    "flyer": "kano.png"
   },
   {
     "artista": "Grave Miasma",
@@ -237,7 +237,7 @@
     "data_fim": "2025-12-10",
     "local": "TBA",
     "cidade": "Curitiba",
-    "flyer": "imagens/gm.png"
+    "flyer": "gm.png"
   },
   {
     "artista": "Corrosion of Conformity",
@@ -245,7 +245,7 @@
     "data_fim": "2026-01-17",
     "local": "Burning House",
     "cidade": "São Paulo",
-    "flyer": "imagens/coc.png"
+    "flyer": "coc.png"
   },
   {
     "artista": "Obituary",
@@ -253,7 +253,7 @@
     "data_fim": "2026-02-22",
     "local": "Tork N'Roll",
     "cidade": "Curitiba",
-    "flyer": "imagens/obituary.png"
+    "flyer": "obituary.png"
   },
   {
     "artista": "Bangers Open Air",
@@ -261,7 +261,7 @@
     "data_fim": "2026-04-26",
     "local": "Memorial da América Latina",
     "cidade": "São Paulo",
-    "flyer": "imagens/bangers.png"
+    "flyer": "bangers.png"
   },
   {
     "artista": "Cemetery Skyline",
@@ -269,7 +269,7 @@
     "data_fim": "2025-09-16",
     "local": "Hangar 110",
     "cidade": "São Paulo",
-    "flyer": "imagens/cs.jpg"
+    "flyer": "cs.jpg"
   },
   {
     "artista": "Hammerfall",
@@ -277,7 +277,7 @@
     "data_fim": "2025-11-11",
     "local": "Tork N'Roll",
     "cidade": "Curitiba",
-    "flyer": "imagens/hammer.png"
+    "flyer": "hammer.png"
   },
   {
     "artista": "Behemoth e Deicide",
@@ -285,7 +285,7 @@
     "data_fim": "2025-09-19",
     "local": "Tork N'Roll",
     "cidade": "Curitiba",
-    "flyer": "imagens/beh.jpg"
+    "flyer": "beh.jpg"
   },
   {
     "artista": "Green Day",
@@ -293,7 +293,7 @@
     "data_fim": "2025-09-12",
     "local": "Arena da Baixada",
     "cidade": "Curitiba",
-    "flyer": "imagens/gd.jpg"
+    "flyer": "gd.jpg"
   },
   {
     "artista": "Sargeist",
@@ -301,7 +301,7 @@
     "data_fim": "2025-09-21",
     "local": "La Iglesia",
     "cidade": "São Paulo",
-    "flyer": "imagens/sargeist.jpg"
+    "flyer": "sargeist.jpg"
   },
   {
     "artista": "The Sisters of Mercy",
@@ -309,7 +309,7 @@
     "data_fim": "2025-09-26",
     "local": "Tokyo Marine Hall",
     "cidade": "São Paulo",
-    "flyer": "imagens/sisters.jpg"
+    "flyer": "sisters.jpg"
   },
   {
     "artista": "Category 7",
@@ -317,7 +317,7 @@
     "data_fim": "2025-07-12",
     "local": "Manifesto Bar",
     "cidade": "São Paulo",
-    "flyer": "imagens/category.jpg"
+    "flyer": "category.jpg"
   },
   {
     "artista": "Cradle of Filth e Uada",
@@ -325,7 +325,7 @@
     "data_fim": "2025-08-22",
     "local": "Tork N'Roll",
     "cidade": "Curitiba",
-    "flyer": "imagens/cradle.jpg"
+    "flyer": "cradle.jpg"
   },
   {
     "artista": "Pestilence e Cancer",
@@ -333,7 +333,7 @@
     "data_fim": "2025-09-10",
     "local": "Burning House",
     "cidade": "São Paulo",
-    "flyer": "imagens/pest.jpg"
+    "flyer": "pest.jpg"
   },
   {
     "artista": "Velhas Virgens",
@@ -341,7 +341,7 @@
     "data_fim": "2025-08-09",
     "local": "Stage Garden",
     "cidade": "Curitiba",
-    "flyer": "imagens/vv.jpg"
+    "flyer": "vv.jpg"
   },
   {
     "artista": "Guns N'Roses",
@@ -349,7 +349,7 @@
     "data_fim": "2025-10-28",
     "local": "Pedreira Paulo Leminski",
     "cidade": "Curitiba",
-    "flyer": "imagens/guns.jpg"
+    "flyer": "guns.jpg"
   },
   {
     "artista": "Fabio Lione",
@@ -357,7 +357,7 @@
     "data_fim": "2026-01-29",
     "local": "Teatro Bom Jesus",
     "cidade": "Curitiba",
-    "flyer": "imagens/fl.jpeg"
+    "flyer": "fl.jpeg"
   },
   {
     "artista": "Velho e Podridão",
@@ -365,7 +365,7 @@
     "data_fim": "2025-10-24",
     "local": "Basement Cultural",
     "cidade": "Curitiba",
-    "flyer": "imagens/velho.jpg"
+    "flyer": "velho.jpg"
   },
   {
     "artista": "Rhapsody of Fire",
@@ -373,7 +373,7 @@
     "data_fim": "2025-12-14",
     "local": "Carioca Club",
     "cidade": "São Paulo",
-    "flyer": "imagens/rof.png"
+    "flyer": "rof.png"
   },
   {
     "artista": "Marduk",
@@ -381,7 +381,7 @@
     "data_fim": "2025-11-02",
     "local": "TBA",
     "cidade": "São Paulo",
-    "flyer": "imagens/marduk.jpg"
+    "flyer": "marduk.jpg"
   },
   {
     "artista": "Animals as Leaders",
@@ -389,6 +389,6 @@
     "data_fim": "2025-08-26",
     "local": "Teatro Bradesco",
     "cidade": "São Paulo",
-    "flyer": "imagens/animal.png"
+    "flyer": "animal.png"
   }
 ]
