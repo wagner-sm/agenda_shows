@@ -1,21 +1,5 @@
 [
   {
-    "artista": "Best of Blues and Rock",
-    "data_inicio": "2025-06-14",
-    "data_fim": "2025-06-15",
-    "local": "Auditório do Iberapuera",
-    "cidade": "São Paulo",
-    "flyer": "best2.png"
-  },
-  {
-    "artista": "Immolation",
-    "data_inicio": "2025-06-15",
-    "data_fim": "2025-06-15",
-    "local": "Hangar 110",
-    "cidade": "São Paulo",
-    "flyer": "immo.png"
-  },
-  {
     "artista": "Possessed",
     "data_inicio": "2025-06-19",
     "data_fim": "2025-06-19",
