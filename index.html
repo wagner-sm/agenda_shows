@@ -112,11 +112,12 @@
   </div>
 
 <script>
-  function parseDataBR(dataBR) {
-    if (!dataBR) return null;
-    const [dia, mes, ano] = dataBR.split('/');
-    return new Date(`${ano}-${mes}-${dia}`); // Cria uma data válida
-  }
+  function parseDataBR(dataBR) {  
+  if (!dataBR) return null;  
+  const [dia, mes, ano] = dataBR.split('/');  
+  // Garante dois dígitos para dia e mês  
+  return new Date(`${ano}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}T00:00:00`);  
+}
 
   function mostrarData(show) {
     if (show.data_inicio === show.data_fim) {
@@ -126,45 +127,41 @@
     }
   }
 
-  fetch('shows.json')  
-  .then(res => res.json())  
-  .then(shows => {  
-    shows.sort((a, b) => parseDataBR(a.data_inicio) - parseDataBR(b.data_inicio));  
-  
-    const hoje = new Date();  
-    hoje.setHours(0, 0, 0, 0);  
-  
-    // CORREÇÃO: Filtrar shows que estão acontecendo (hoje está entre data_inicio e data_fim)  
-    shows = shows.filter(show => {  
-      const dataInicio = parseDataBR(show.data_inicio);  
-      const dataFim = parseDataBR(show.data_fim);  
-        
-      // Show está ativo se hoje >= data_inicio E hoje <= data_fim  
-      return dataInicio <= hoje && dataFim >= hoje;  
-    });  
-  
-    const container = document.getElementById('shows');  
-    if (shows.length === 0) {  
-      container.innerHTML = `<p style="color:#ffb347;font-size:1.2rem;text-align:center;">Nenhum show cadastrado no momento.</p>`;  
-      return;  
-    }  
-  
-    let html = '';  
-    shows.forEach(show => {  
-      html += `  
-        <div class="show-card">  
-          <img src="imagens/${show.flyer}" alt="Flyer do show de ${show.artista}" onclick="abrirImagemModal('imagens/${show.flyer}')">  
-          <div class="show-info">  
-            <h2>${show.artista}</h2>  
-            <p><strong>Data:</strong> ${mostrarData(show)}</p>  
-            <p><strong>Local:</strong> ${show.local}</p>  
-            <p><strong>Cidade:</strong> ${show.cidade}</p>  
-          </div>  
-        </div>  
-      `;  
-    });  
-    container.innerHTML = html;  
-  });
+  fetch('shows.json')
+    .then(res => res.json())
+    .then(shows => {
+      shows.sort((a, b) => parseDataBR(a.data_inicio) - parseDataBR(b.data_inicio));
+
+      const hoje = new Date();
+      hoje.setHours(0, 0, 0, 0);
+
+      shows = shows.filter(show => {
+        const dataFim = parseDataBR(show.data_fim);
+        return dataFim >= hoje;
+      });
+
+      const container = document.getElementById('shows');
+      if (shows.length === 0) {
+        container.innerHTML = `<p style="color:#ffb347;font-size:1.2rem;text-align:center;">Nenhum show cadastrado no momento.</p>`;
+        return;
+      }
+
+      let html = '';
+      shows.forEach(show => {
+        html += `
+          <div class="show-card">
+            <img src="imagens/${show.flyer}" alt="Flyer do show de ${show.artista}" onclick="abrirImagemModal('imagens/${show.flyer}')">
+            <div class="show-info">
+              <h2>${show.artista}</h2>
+              <p><strong>Data:</strong> ${mostrarData(show)}</p>
+              <p><strong>Local:</strong> ${show.local}</p>
+              <p><strong>Cidade:</strong> ${show.cidade}</p>
+            </div>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
+    });
 
     // Modal JS
     function abrirImagemModal(src) {
