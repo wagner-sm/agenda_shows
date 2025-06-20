@@ -366,5 +366,13 @@
     "local": "TBA",
     "cidade": "Curitiba",
     "flyer": "dri.jpg"
+  },
+  {
+    "artista": "Mayhem",
+    "data_inicio": "07/12/2025",
+    "data_fim": "",
+    "local": "TBA",
+    "cidade": "São Paulo",
+    "flyer": "mayhem.jpg"
   }
 ]
