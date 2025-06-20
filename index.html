@@ -113,11 +113,11 @@
 
 <script>
   function parseDataBR(dataBR) {  
-  if (!dataBR) return null;  
-  const [dia, mes, ano] = dataBR.split('/');  
-  // Garante dois dígitos para dia e mês  
-  return new Date(`${ano}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}T00:00:00`);  
-}
+    if (!dataBR) return null;  
+    const [dia, mes, ano] = dataBR.split('/');  
+    // Garante dois dÃ­gitos para dia e mÃªs  
+    return new Date(`${ano}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}T00:00:00`);  
+  }
 
   function mostrarData(show) {
     if (show.data_inicio === show.data_fim) {
@@ -130,6 +130,15 @@
   fetch('shows.json')
     .then(res => res.json())
     .then(shows => {
+      // Processa cada show para garantir que data_fim existe
+      shows = shows.map(show => {
+        // Se data_fim nÃ£o existir ou estiver vazia, usa data_inicio
+        if (!show.data_fim || show.data_fim.trim() === '') {
+          show.data_fim = show.data_inicio;
+        }
+        return show;
+      });
+
       shows.sort((a, b) => parseDataBR(a.data_inicio) - parseDataBR(b.data_inicio));
 
       const hoje = new Date();
