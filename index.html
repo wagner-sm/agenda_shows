@@ -3,17 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <title>Agenda de Shows</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     body {
       background: #181818;
       color: #fff;
-      font-family: Arial;
+      font-family: Arial, sans-serif;
       margin: 0;
+      transition: background 0.3s, color 0.3s;
     }
     h1 {
       text-align: center;
       margin-top: 30px;
+      letter-spacing: 1px;
     }
     .shows-list {
       display: flex;
@@ -23,15 +26,19 @@
       padding: 40px 10px;
     }
     .show-card {
-      background: #282828;
-      border-radius: 10px;
+      background: linear-gradient(135deg, #282828 80%, #ffb34722 100%);
+      border-radius: 16px;
       width: 320px;
       box-shadow: 0 2px 8px #0008;
       margin-bottom: 20px;
-      transition: transform 0.3s;
+      transition: transform 0.3s, box-shadow 0.3s, border 0.3s;
+      border: 2px solid transparent;
+      animation: fadeInUp 0.7s;
     }
     .show-card:hover {
-      transform: scale(1.02);
+      transform: scale(1.04);
+      box-shadow: 0 6px 24px #ffb34755;
+      border: 2px solid #ffb347;
     }
     .show-card img {
       width: 100%;
@@ -39,6 +46,11 @@
       object-fit: contain;
       background: #111;
       cursor: pointer;
+      border-radius: 12px 12px 0 0;
+      transition: filter 0.2s;
+    }
+    .show-card img:hover {
+      filter: brightness(1.1) saturate(1.2);
     }
     .show-info {
       padding: 15px;
@@ -46,6 +58,7 @@
     .show-info h2 {
       margin: 0 0 10px 0;
       color: #ffb347;
+      font-size: 1.3rem;
     }
     .show-info p {
       margin: 3px 0;
@@ -77,18 +90,92 @@
       position: absolute;
       top: 20px;
       right: 30px;
-      font-size: 40px;
+      font-size: 32px;
       color: #fff;
       cursor: pointer;
       z-index: 1001;
+      background: #181818cc;
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s, color 0.2s;
+    }
+    #closeModal:hover {
+      background: #ffb347;
+      color: #181818;
     }
     @keyframes fadeIn {
       from { opacity: 0; }
       to { opacity: 1; }
     }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
+    /* Tema claro */
+    body.light-theme {
+      background: #f5f5f5;
+      color: #222;
+    }
+    body.light-theme .show-card {
+      background: linear-gradient(135deg, #fff 80%, #e67e2222 100%);
+      color: #222;
+      box-shadow: 0 2px 8px #0002;
+    }
+    body.light-theme .show-info h2,
+    body.light-theme .show-info strong {
+      color: #e67e22;
+    }
+    body.light-theme #closeModal {
+      background: #fff8;
+      color: #e67e22;
+    }
+    body.light-theme #closeModal:hover {
+      background: #e67e22;
+      color: #fff;
+    }
+    @media (max-width: 600px) {
+      .shows-list {
+        flex-direction: column;
+        align-items: center;
+        padding: 10px 0;
+      }
+      .show-card {
+        width: 95vw;
+        min-width: unset;
+      }
+      .show-card img {
+        height: 180px;
+      }
+    }
+    /* Botão de alternância de tema */
+    #toggleTheme {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 2000;
+      background: #282828;
+      color: #ffb347;
+      border: none;
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      font-size: 1.5rem;
+      cursor: pointer;
+      box-shadow: 0 2px 8px #0005;
+      transition: background 0.2s, color 0.2s;
+    }
+    #toggleTheme:hover {
+      background: #ffb347;
+      color: #282828;
+    }
   </style>
 </head>
 <body>
+  <button id="toggleTheme" title="Alternar tema">??</button>
   <h1>Agenda de Shows</h1>
   <div class="shows-list" id="shows"></div>
 
@@ -116,73 +203,75 @@
     }
   }
 
+  // Mostra mensagem de carregando
+  const container = document.getElementById('shows');
+  container.innerHTML = `<p style="color:#ffb347;font-size:1.2rem;text-align:center;width:100vw;">Carregando shows...</p>`;
+
   fetch(SHEET_API_URL)
     .then(res => res.json())
     .then(shows => {
-      // SheetDB retorna um array de objetos
-      // Sheet.best retorna { data: [ ... ] }
       if (shows.data) shows = shows.data;
-
-      // Garante que data_fim existe
       shows = shows.map(show => {
         if (!show.data_fim || show.data_fim.trim() === '') {
           show.data_fim = show.data_inicio;
         }
         return show;
       });
-
       shows.sort((a, b) => parseDataBR(a.data_inicio) - parseDataBR(b.data_inicio));
-
       const hoje = new Date();
       hoje.setHours(0, 0, 0, 0);
-
       shows = shows.filter(show => {
         const dataFim = parseDataBR(show.data_fim);
         return dataFim >= hoje;
       });
-
-      const container = document.getElementById('shows');
       if (shows.length === 0) {
         container.innerHTML = `<p style="color:#ffb347;font-size:1.2rem;text-align:center;">Nenhum show cadastrado no momento.</p>`;
         return;
       }
-
       let html = '';
       shows.forEach(show => {
         html += `
-          <div class="show-card">
-            <img src="${show.flyer}" alt="Flyer do show de ${show.artista}" onclick="abrirImagemModal('${show.flyer}')">
-            <div class="show-info">
-              <h2>${show.artista}</h2>
-              <p><strong><i class="fa-solid fa-calendar-days"></i></strong> ${mostrarData(show)}</p>  
-			  <p><strong><i class="fa-solid fa-location-dot"></i></strong> ${show.local}</p>  
-			  <p><strong><i class="fa-solid fa-city"></i></strong> ${show.cidade}</p>
-            </div>
+        <div class="show-card" tabindex="0">
+          <img src="${show.flyer}" alt="Flyer do show de ${show.artista} em ${show.cidade}" loading="lazy" onclick="abrirImagemModal('${show.flyer}')">
+          <div class="show-info">
+            <h2>${show.artista}</h2>
+            <p><strong><i class="fa-solid fa-calendar-days"></i></strong> ${mostrarData(show)}</p>  
+            <p><strong><i class="fa-solid fa-location-dot"></i></strong> ${show.local}</p>  
+            <p><strong><i class="fa-solid fa-city"></i></strong> ${show.cidade}</p>
           </div>
+        </div>
         `;
       });
       container.innerHTML = html;
+    })
+    .catch(() => {
+      container.innerHTML = `<p style='color:#ffb347;font-size:1.2rem;text-align:center;'>Erro ao carregar os shows. Tente novamente mais tarde.</p>`;
     });
 
-    // Modal JS
-    function abrirImagemModal(src) {
-      const modal = document.getElementById('imageModal');
-      const modalImg = document.getElementById('modalImg');
-      modalImg.src = src;
-      modal.style.display = 'flex';
+  // Modal JS
+  window.abrirImagemModal = function(src) {
+    const modal = document.getElementById('imageModal');
+    const modalImg = document.getElementById('modalImg');
+    modalImg.src = src;
+    modal.style.display = 'flex';
+  }
+  document.getElementById('imageModal').addEventListener('click', function(e) {
+    if (e.target.id === 'imageModal' || e.target.id === 'closeModal') {
+      this.style.display = 'none';
     }
+  });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      document.getElementById('imageModal').style.display = 'none';
+    }
+  });
 
-    document.getElementById('imageModal').addEventListener('click', function(e) {
-      if (e.target.id === 'imageModal' || e.target.id === 'closeModal') {
-        this.style.display = 'none';
-      }
-    });
-
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') {
-        document.getElementById('imageModal').style.display = 'none';
-      }
-    });
+  // Alternância de tema
+  const btnTheme = document.getElementById('toggleTheme');
+  btnTheme.onclick = function() {
+    document.body.classList.toggle('light-theme');
+    this.textContent = document.body.classList.contains('light-theme') ? '??' : '??';
+  };
 </script>
 </body>
 </html>
