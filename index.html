@@ -47,7 +47,26 @@
     background: #111;
     cursor: pointer;
     border-radius: 12px 12px 0 0;
-    transition: filter 0.2s;
+    transition: filter 0.2s, transform 0.2s;
+    /* Otimizações de performance */
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    will-change: filter, transform;
+    backface-visibility: hidden;
+    /* Loading placeholder */
+    background-image: linear-gradient(90deg, #333 25%, #444 50%, #333 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    }
+    
+    .show-card img.loaded {
+    background-image: none;
+    animation: none;
+    }
+    
+    @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
     }
     .show-card img:hover {
     filter: brightness(1.1) saturate(1.2);
@@ -235,7 +254,32 @@
     }
     
     .show-card img {
-        height: 250px;
+    width: 100%;
+    height: 300px;
+    object-fit: contain;
+    background: #111;
+    cursor: pointer;
+    border-radius: 12px 12px 0 0;
+    transition: filter 0.2s, transform 0.2s;
+    /* Otimizações de performance */
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    will-change: filter, transform;
+    backface-visibility: hidden;
+    /* Loading placeholder */
+    background-image: linear-gradient(90deg, #333 25%, #444 50%, #333 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    }
+    
+    .show-card img.loaded {
+    background-image: none;
+    animation: none;
+    }
+    
+    @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
     }
     
     .show-info {
@@ -313,8 +357,32 @@
     }
     
     .show-card img {
-        height: 220px;
-        border-radius: 10px 10px 0 0;
+    width: 100%;
+    height: 300px;
+    object-fit: contain;
+    background: #111;
+    cursor: pointer;
+    border-radius: 12px 12px 0 0;
+    transition: filter 0.2s, transform 0.2s;
+    /* Otimizações de performance */
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    will-change: filter, transform;
+    backface-visibility: hidden;
+    /* Loading placeholder */
+    background-image: linear-gradient(90deg, #333 25%, #444 50%, #333 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    }
+    
+    .show-card img.loaded {
+    background-image: none;
+    animation: none;
+    }
+    
+    @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
     }
     
     .show-info {
@@ -433,7 +501,7 @@
     shows.forEach(show => {
     html += `
     <div class="show-card" tabindex="0">
-    <img src="${show.flyer}" alt="Flyer do show de ${show.artista} em ${show.cidade}" loading="lazy" onclick="abrirImagemModal('${show.flyer}')">
+    <img src="${show.flyer}" alt="Flyer do show de ${show.artista} em ${show.cidade}" loading="lazy" onclick="abrirImagemModal('${show.flyer}')" onload="this.classList.add('loaded')" onerror="this.src='https://placehold.co/320x300/333/ffb347?text=Imagem+Indisponível'">
     <div class="show-info">
     <h2>${show.artista}</h2>
     <div class="info-item">
