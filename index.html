@@ -152,20 +152,7 @@
     background: #e67e22;
     color: #fff;
     }
-    @media (max-width: 600px) {
-    .shows-list {
-    flex-direction: column;
-    align-items: center;
-    padding: 10px 0;
-    }
-    .show-card {
-    width: 95vw;
-    min-width: unset;
-    }
-    .show-card img {
-    height: 180px;
-    }
-    }
+    
     /* Botão de alternância de tema */
     #toggleTheme {
     position: fixed;
@@ -191,8 +178,8 @@
     color: #282828;
     }
   
-/* Botão de voltar ao topo */
-#backToTop {
+    /* Botão de voltar ao topo */
+    #backToTop {
     position: fixed;
     bottom: 30px;
     right: 30px;
@@ -210,32 +197,180 @@
     z-index: 1000;
     font-size: 20px;
     color: white;
-}
+    }
 
-#backToTop:hover {
+    #backToTop:hover {
     transform: translateY(-3px);
     box-shadow: 0 6px 20px rgba(251, 67, 114, 0.4);
     background: linear-gradient(135deg, #e76e22 0%, #fb4372 100%);
-}
-
-#backToTop:active {
-    transform: translateY(-1px);
-}
-
-#backToTop.show {
-    display: flex;
-}
-
-/* Responsivo */
-@media (max-width: 600px) {
-    #backToTop {
-    bottom: 20px;
-    right: 20px;
-    width: 45px;
-    height: 45px;
-    font-size: 18px;
     }
-}
+
+    #backToTop:active {
+    transform: translateY(-1px);
+    }
+
+    #backToTop.show {
+    display: flex;
+    }
+
+    /* Responsivo para tablets */
+    @media (max-width: 768px) {
+    h1 {
+        font-size: 1.8rem;
+        margin-top: 80px;
+        padding: 0 20px;
+    }
+    
+    .shows-list {
+        flex-direction: column;
+        align-items: center;
+        padding: 20px 10px;
+        gap: 20px;
+    }
+    
+    .show-card {
+        width: calc(100vw - 20px);
+        max-width: 400px;
+        min-width: unset;
+    }
+    
+    .show-card img {
+        height: 250px;
+    }
+    
+    .show-info {
+        padding: 20px;
+    }
+    
+    .show-info h2 {
+        font-size: 1.4rem;
+        margin-bottom: 18px;
+    }
+    
+    .info-item {
+        margin: 12px 0;
+        gap: 15px;
+    }
+    
+    .info-icon {
+        width: 18px;
+        font-size: 1.1rem;
+    }
+    
+    .info-text {
+        font-size: 1rem;
+        line-height: 1.4;
+    }
+    
+    #toggleTheme {
+        top: 15px;
+        right: 15px;
+        width: 44px;
+        height: 44px;
+        font-size: 1.1rem;
+    }
+    
+    #backToTop {
+        bottom: 20px;
+        right: 20px;
+        width: 50px;
+        height: 50px;
+        font-size: 18px;
+    }
+    
+    #closeModal {
+        top: 15px;
+        right: 20px;
+        width: 44px;
+        height: 44px;
+        font-size: 28px;
+    }
+    
+    #imageModal img {
+        max-width: 95%;
+        max-height: 85%;
+        border-width: 3px;
+    }
+    }
+
+    /* Responsivo para celulares */
+    @media (max-width: 480px) {
+    h1 {
+        font-size: 1.6rem;
+        margin-top: 70px;
+        padding: 0 15px;
+    }
+    
+    .shows-list {
+        padding: 15px 8px;
+        gap: 15px;
+    }
+    
+    .show-card {
+        width: calc(100vw - 16px);
+        margin: 0;
+        border-radius: 12px;
+    }
+    
+    .show-card img {
+        height: 220px;
+        border-radius: 10px 10px 0 0;
+    }
+    
+    .show-info {
+        padding: 16px;
+    }
+    
+    .show-info h2 {
+        font-size: 1.3rem;
+        margin-bottom: 15px;
+    }
+    
+    .info-item {
+        margin: 10px 0;
+        gap: 12px;
+    }
+    
+    .info-icon {
+        width: 16px;
+        font-size: 1rem;
+    }
+    
+    .info-text {
+        font-size: 0.95rem;
+        line-height: 1.3;
+    }
+    
+    #toggleTheme {
+        top: 12px;
+        right: 12px;
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+    
+    #backToTop {
+        bottom: 15px;
+        right: 15px;
+        width: 46px;
+        height: 46px;
+        font-size: 16px;
+    }
+    
+    #closeModal {
+        top: 12px;
+        right: 15px;
+        width: 40px;
+        height: 40px;
+        font-size: 24px;
+    }
+    
+    #imageModal img {
+        max-width: 96%;
+        max-height: 80%;
+        border-width: 2px;
+    }
+    }
 </style>
 </head>
 <body>  
