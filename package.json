@@ -1,0 +1,8 @@
+{
+  "name": "agenda-shows-netlify",
+  "version": "1.0.0",
+  "description": "API para Google Sheets no Netlify",
+  "dependencies": {
+    "googleapis": "^128.0.0"
+  }
+}

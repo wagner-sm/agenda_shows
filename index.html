@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Agenda de Shows</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+    background: #181818;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    transition: background 0.3s, color 0.3s;
+    }
+    h1 {
+    text-align: center;
+    margin-top: 30px;
+    letter-spacing: 1px;
+    }
+    .shows-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    justify-content: center;
+    padding: 40px 10px;
+    }
+    .show-card {
+    background: linear-gradient(135deg, #282828 80%, #ffb34722 100%);
+    border-radius: 16px;
+    width: 250px;
+    box-shadow: 0 2px 8px #0008;
+    margin-bottom: 20px;
+    transition: transform 0.3s, box-shadow 0.3s, border 0.3s;
+    border: 2px solid transparent;
+    animation: fadeInUp 0.7s;
+    }
+    .show-card:hover {
+    transform: scale(1.04);
+    box-shadow: 0 6px 24px #ffb34755;
+    border: 2px solid #ffb347;
+    }
+    .show-card img {
+    width: 100%;
+    height: 235px;
+    object-fit: contain;
+    background: #111;
+    cursor: pointer;
+    border-radius: 12px 12px 0 0;
+    transition: filter 0.2s, transform 0.2s;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    will-change: filter, transform;
+    backface-visibility: hidden;
+    background-image: linear-gradient(90deg, #333 25%, #444 50%, #333 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    }
+
+    .show-card img.loaded {
+    background-image: none;
+    animation: none;
+    }
+
+    @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+    }
+    .show-card img:hover {
+    filter: brightness(1.1) saturate(1.2);
+    }
+    .show-info {
+    padding: 15px;
+    }
+    .show-info h2 {
+    margin: 0 0 15px 0;
+    color: #ffb347;
+    font-size: 1.3rem;
+    }
+
+    .info-item {
+    display: flex;
+    align-items: center;
+    margin: 8px 0;
+    gap: 12px;
+    }
+
+    .info-icon {
+    color: #ffb347;
+    width: 16px;
+    text-align: center;
+    flex-shrink: 0;
+    }
+
+    .info-text {
+    flex: 1;
+    margin: 0;
+    }
+
+    #imageModal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.85);
+    justify-content: center;
+    align-items: center;
+    z-index: 3000;
+    animation: fadeIn 0.3s;
+    }
+    #imageModal img {
+    max-width: 90%;
+    max-height: 90%;
+    border: 5px solid #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 20px #000;
+    }
+    #closeModal {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    font-size: 32px;
+    color: #fff;
+    cursor: pointer;
+    z-index: 3001;
+    background: #181818cc;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, color 0.2s;
+    }
+    #closeModal:hover {
+    background: #ffb347;
+    color: #181818;
+    }
+    @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+    }
+    @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px);}
+    to { opacity: 1; transform: translateY(0);}
+    }
+
+    body.light-theme {
+    background: #f5f5f5;
+    color: #222;
+    }
+    body.light-theme .show-card {
+    background: linear-gradient(135deg, #fff 80%, #e67e2222 100%);
+    color: #222;
+    box-shadow: 0 2px 8px #0002;
+    }
+    body.light-theme .show-info h2,
+    body.light-theme .info-icon {
+    color: #e67e22;
+    }
+    body.light-theme #closeModal {
+    background: #fff8;
+    color: #e67e22;
+    }
+    body.light-theme #closeModal:hover {
+    background: #e67e22;
+    color: #fff;
+    }
+
+    #toggleTheme {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 2000;
+    background: #282828;
+    color: #ffb347;
+    border: none;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: 0 2px 8px #0005;
+    transition: background 0.2s, color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    }
+    #toggleTheme:hover {
+    background: #ffb347;
+    color: #282828;
+    }
+
+    #backToTop {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #fb4372 0%, #e76e22 100%);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(251, 67, 114, 0.3);
+    transition: all 0.3s ease;
+    z-index: 1000;
+    font-size: 20px;
+    color: white;
+    }
+
+    #backToTop:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(251, 67, 114, 0.4);
+    background: linear-gradient(135deg, #e76e22 0%, #fb4372 100%);
+    }
+
+    #backToTop:active {
+    transform: translateY(-1px);
+    }
+
+    #backToTop.show {
+    display: flex;
+    }
+
+    @media (max-width: 768px) {
+    h1 {
+    font-size: 1.8rem;
+    margin-top: 80px;
+    padding: 0 20px;
+    }
+
+    .shows-list {
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 10px;
+    gap: 20px;
+    }
+
+    .show-card {
+    width: calc(100vw - 20px);
+    max-width: 400px;
+    min-width: unset;
+    }
+
+    .show-info {
+    padding: 20px;
+    }
+
+    .show-info h2 {
+    font-size: 1.4rem;
+    margin-bottom: 18px;
+    }
+
+    .info-item {
+    margin: 12px 0;
+    gap: 15px;
+    }
+
+    .info-icon {
+    width: 18px;
+    font-size: 1.1rem;
+    }
+
+    .info-text {
+    font-size: 1rem;
+    line-height: 1.4;
+    }
+
+    #toggleTheme {
+    top: 15px;
+    right: 15px;
+    width: 44px;
+    height: 44px;
+    font-size: 1.1rem;
+    }
+
+    #backToTop {
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    font-size: 18px;
+    }
+
+    #closeModal {
+    top: 15px;
+    right: 20px;
+    width: 44px;
+    height: 44px;
+    font-size: 28px;
+    }
+
+    #imageModal img {
+    max-width: 95%;
+    max-height: 85%;
+    border-width: 3px;
+    }
+    }
+
+    @media (max-width: 480px) {
+    h1 {
+    font-size: 1.6rem;
+    margin-top: 70px;
+    padding: 0 15px;
+    }
+
+    .shows-list {
+    padding: 15px 8px;
+    gap: 15px;
+    }
+
+    .show-card {
+    width: calc(100vw - 16px);
+    margin: 0;
+    border-radius: 12px;
+    }
+
+    .show-info {
+    padding: 16px;
+    }
+
+    .show-info h2 {
+    font-size: 1.3rem;
+    margin-bottom: 15px;
+    }
+
+    .info-item {
+    margin: 10px 0;
+    gap: 12px;
+    }
+
+    .info-icon {
+    width: 16px;
+    font-size: 1rem;
+    }
+
+    .info-text {
+    font-size: 0.95rem;
+    line-height: 1.3;
+    }
+
+    #toggleTheme {
+    top: 12px;
+    right: 12px;
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+    }
+
+    #backToTop {
+    bottom: 15px;
+    right: 15px;
+    width: 46px;
+    height: 46px;
+    font-size: 16px;
+    }
+
+    #closeModal {
+    top: 12px;
+    right: 15px;
+    width: 40px;
+    height: 40px;
+    font-size: 24px;
+    }
+
+    #imageModal img {
+    max-width: 96%;
+    max-height: 80%;
+    border-width: 2px;
+    }
+    }
+</style>
+</head>
+<body>  
+  <button id="toggleTheme">
+    <i class="fas fa-moon"></i>
+  </button>
+  <h1>Agenda de Shows</h1>
+  <div class="shows-list" id="shows"></div>
+
+  <div id="imageModal">
+    <span id="closeModal">&times;</span>
+    <img id="modalImg" src="" alt="Imagem em tamanho real">
+  </div>
+
+<script>
+  // 🚀 CONFIGURAÇÃO PARA NETLIFY
+  const API_CONFIG = {
+    // Se estiver testando localmente, use: 'http://localhost:8888'
+    // Em produção, deixe vazio para usar a URL atual
+    baseUrl: '', // Deixe vazio para usar a URL atual do Netlify
+    spreadsheetId: '1mf56UH_7u8AYOo8jhRnvrbY9ufRorhku9JnrkLdU0zw', // ⚠️ ALTERE AQUI
+    range: 'Página1!A:Z'
+  };
+
+  // Função para obter a URL base
+  function getBaseUrl() {
+    return API_CONFIG.baseUrl || window.location.origin;
+  }
+
+  // Função para buscar dados da API no Netlify
+  async function fetchShows() {
+    try {
+      const baseUrl = getBaseUrl();
+      const url = `${baseUrl}/.netlify/functions/sheets/${API_CONFIG.spreadsheetId}/read?range=${API_CONFIG.range}`;
+
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        throw new Error(`Erro HTTP: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      if (!data.success) {
+        throw new Error(data.error || 'Erro desconhecido');
+      }
+
+      // Converte os dados da planilha em objetos
+      const rows = data.data;
+      if (!rows || rows.length === 0) {
+        return [];
+      }
+
+      // Primeira linha são os cabeçalhos
+      const headers = rows[0];
+      const shows = [];
+
+      // Converte cada linha em um objeto usando os cabeçalhos
+      for (let i = 1; i < rows.length; i++) {
+        const row = rows[i];
+        const show = {};
+
+        headers.forEach((header, index) => {
+          show[header.toLowerCase().replace(/\s+/g, '_')] = row[index] || '';
+        });
+
+        // Pula linhas vazias
+        if (show.artista && show.artista.trim()) {
+          shows.push(show);
+        }
+      }
+
+      return shows;
+
+    } catch (error) {
+      console.error('Erro ao buscar shows:', error);
+      throw error;
+    }
+  }
+
+  function parseDataBR(dataBR) {  
+    if (!dataBR) return null;  
+    const [dia, mes, ano] = dataBR.split('/');  
+    return new Date(`${ano}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}T00:00:00`);  
+  }
+
+  function mostrarData(show) {
+    if (show.data_inicio === show.data_fim || !show.data_fim) {
+      return show.data_inicio;
+    } else {
+      return `${show.data_inicio} a ${show.data_fim}`;
+    }
+  }
+
+  // Função principal para carregar e exibir os shows
+  async function loadShows() {
+    const container = document.getElementById('shows');
+
+    // Mostra mensagem de carregando
+    container.innerHTML = `<p style="color:#ffb347;font-size:1.2rem;text-align:center;width:100vw;">Carregando shows...</p>`;
+
+    try {
+      let shows = await fetchShows();
+
+      // Processa os dados
+      shows = shows.map(show => {
+        if (!show.data_fim || show.data_fim.trim() === '') {
+          show.data_fim = show.data_inicio;
+        }
+        return show;
+      });
+
+      // Ordena por data
+      shows.sort((a, b) => parseDataBR(a.data_inicio) - parseDataBR(b.data_inicio));
+
+      // Filtra shows futuros
+      const hoje = new Date();
+      hoje.setHours(0, 0, 0, 0);
+      shows = shows.filter(show => {
+        const dataFim = parseDataBR(show.data_fim);
+        return dataFim >= hoje;
+      });
+
+      if (shows.length === 0) {
+        container.innerHTML = `<p style="color:#ffb347;font-size:1.2rem;text-align:center;">Nenhum show cadastrado no momento.</p>`;
+        return;
+      }
+
+      // Gera HTML dos shows
+      let html = '';
+      shows.forEach(show => {
+        html += `
+          <div class="show-card" tabindex="0">
+            <img src="${show.flyer}" alt="Flyer do show de ${show.artista} em ${show.cidade}" loading="lazy" onclick="abrirImagemModal('${show.flyer}')" onload="this.classList.add('loaded')" onerror="this.src='https://placehold.co/320x300/333/ffb347?text=Imagem+Indisponível'">
+            <div class="show-info">
+              <h2>${show.artista}</h2>
+              <div class="info-item">
+                <i class="fa-solid fa-calendar-days info-icon"></i>
+                <p class="info-text">${mostrarData(show)}</p>
+              </div>
+              <div class="info-item">
+                <i class="fa-solid fa-location-dot info-icon"></i>
+                <p class="info-text">${show.local}</p>
+              </div>
+              <div class="info-item">
+                <i class="fa-solid fa-city info-icon"></i>
+                <p class="info-text">${show.cidade}</p>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+
+    } catch (error) {
+      console.error('Erro ao carregar shows:', error);
+      const baseUrl = getBaseUrl();
+      container.innerHTML = `
+        <div style="color:#ffb347;font-size:1.2rem;text-align:center;width:100vw;">
+          <p>Erro ao carregar os shows.</p>
+          <p style="font-size:1rem;margin-top:10px;">
+            Verifique se a API está configurada em <strong>${baseUrl}</strong>
+          </p>
+          <button onclick="loadShows()" style="background:#ffb347;color:#181818;border:none;padding:10px 20px;border-radius:5px;cursor:pointer;margin-top:15px;">
+            Tentar Novamente
+          </button>
+        </div>
+      `;
+    }
+  }
+
+  // Carrega os shows quando a página carrega
+  loadShows();
+
+  // Modal JS
+  window.abrirImagemModal = function(src) {
+    const modal = document.getElementById('imageModal');
+    const modalImg = document.getElementById('modalImg');
+    modalImg.src = src;
+    modal.style.display = 'flex';
+  }
+
+  document.getElementById('imageModal').addEventListener('click', function(e) {
+    if (e.target.id === 'imageModal' || e.target.id === 'closeModal') {
+      this.style.display = 'none';
+    }
+  });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      document.getElementById('imageModal').style.display = 'none';
+    }
+  });
+
+  // Alternância de tema
+  const btnTheme = document.getElementById('toggleTheme');
+  btnTheme.onclick = function() {
+    document.body.classList.toggle('light-theme');
+    const icon = this.querySelector('i');
+    if (document.body.classList.contains('light-theme')) {
+      icon.className = 'fas fa-sun';
+    } else {
+      icon.className = 'fas fa-moon';
+    }
+  };
+</script>
+
+<button id="backToTop" title="Voltar ao topo">
+  <i class="fas fa-arrow-up"></i>
+</button>
+
+<script>
+// Botão de voltar ao topo
+window.addEventListener('scroll', function() {
+    const backToTopBtn = document.getElementById('backToTop');
+    if (window.pageYOffset > 300) {
+      backToTopBtn.classList.add('show');
+    } else {
+      backToTopBtn.classList.remove('show');
+    }
+});
+
+document.getElementById('backToTop').addEventListener('click', function() {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+});
+</script>
+</body>
+</html>
