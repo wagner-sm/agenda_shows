@@ -1,10 +1,23 @@
 import React from "react";
 
+// Função para converter data ISO (yyyy-mm-dd) para formato brasileiro (dd/mm/yyyy)
+function formatarData(dataISO) {
+  if (!dataISO) return '';
+  const data = new Date(`${dataISO}T00:00:00`);
+  const dia = String(data.getDate()).padStart(2, '0');
+  const mes = String(data.getMonth() + 1).padStart(2, '0');
+  const ano = data.getFullYear();
+  return `${dia}/${mes}/${ano}`;
+}
+
 function mostrarData(show) {
+  const dataInicioFormatada = formatarData(show.data_inicio);
+  const dataFimFormatada = formatarData(show.data_fim);
+
   if (show.data_inicio === show.data_fim || !show.data_fim) {
-    return show.data_inicio;
+    return dataInicioFormatada;
   } else {
-    return `${show.data_inicio} a ${show.data_fim}`;
+    return `${dataInicioFormatada} a ${dataFimFormatada}`;
   }
 }
 
