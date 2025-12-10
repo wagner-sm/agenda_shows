@@ -124,7 +124,8 @@ function LoginForm({ onLogin }) {
 function AdminPanel() {
   const [shows, setShows] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [editingId, setEditingId] = useState(null);  
+  const [editingId, setEditingId] = useState(null);
+  const [apiStatus, setApiStatus] = useState("online");
   const [message, setMessage] = useState("");
 
   const [formData, setFormData] = useState({
