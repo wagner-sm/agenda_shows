@@ -266,6 +266,7 @@ function AdminPanel() {
       flyer: show.flyer || "",
       file_id: show.file_id || ""
     });
+	window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const deleteShow = async (id) => {
@@ -474,7 +475,7 @@ export default function AdminPage() {
       <button
         onClick={() => {
           sessionStorage.removeItem("adminAuth");
-          window.location.reload();
+          window.location.href = '/' 
         }}
         style={styles.logout}
       >
