@@ -271,6 +271,8 @@ function AdminPanel() {
 
   const deleteShow = async (id) => {
     if (!window.confirm("Excluir este show?")) return;
+	
+	window.scrollTo({ top: 0, behavior: 'smooth' });
 
     try {
       // Busca o show para pegar o file_id antes de deletar
