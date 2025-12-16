@@ -69,24 +69,34 @@ async function deleteFromImageKit(fileId) {
 }
 
 /* ============================
-   LOGIN SIMPLES (FRONT ONLY)
+   LOGIN COM SUPABASE AUTH
 ============================ */
 function LoginForm({ onLogin }) {
-  const [user, setUser] = useState("");
-  const [pass, setPass] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+    setLoading(true);
 
-    const ADMIN_USER = process.env.REACT_APP_ADMIN_USERNAME || "admin";
-    const ADMIN_PASS = process.env.REACT_APP_ADMIN_PASSWORD || "admin123";
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password,
+      });
 
-    if (user === ADMIN_USER && pass === ADMIN_PASS) {
-      sessionStorage.setItem("adminAuth", "true");
-      onLogin(true);
-    } else {
-      setError("Usuário ou senha inválidos");
+      if (error) throw error;
+
+      if (data.session) {
+        onLogin(true);
+      }
+    } catch (error) {
+      setError(error.message || "Erro ao fazer login");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -96,23 +106,28 @@ function LoginForm({ onLogin }) {
         <h2>Admin Login</h2>
 
         <input
-          placeholder="Usuário"
-          value={user}
-          onChange={(e) => setUser(e.target.value)}
+          type="email"
+          placeholder="E-mail"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           style={styles.input}
+          required
         />
 
         <input
           type="password"
           placeholder="Senha"
-          value={pass}
-          onChange={(e) => setPass(e.target.value)}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
           style={styles.input}
+          required
         />
 
-        {error && <p style={{ color: "#ff6b6b" }}>{error}</p>}
+        {error && <p style={{ color: "#ff6b6b", fontSize: 14 }}>{error}</p>}
 
-        <button style={styles.addButton}>Entrar</button>
+        <button style={styles.addButton} disabled={loading}>
+          {loading ? "Entrando..." : "Entrar"}
+        </button>
       </form>
     </div>
   );
@@ -127,6 +142,7 @@ function AdminPanel() {
   const [editingId, setEditingId] = useState(null);
   const [apiStatus, setApiStatus] = useState("online");
   const [message, setMessage] = useState("");
+  const [userEmail, setUserEmail] = useState("");
 
   const [formData, setFormData] = useState({
     artista: "",
@@ -168,6 +184,13 @@ function AdminPanel() {
 
   useEffect(() => {
     loadShows();
+    
+    // Pega o email do usuário logado
+    supabase.auth.getUser().then(({ data }) => {
+      if (data.user) {
+        setUserEmail(data.user.email);
+      }
+    });
   }, [loadShows]);
 
   const resetForm = () => {
@@ -266,13 +289,13 @@ function AdminPanel() {
       flyer: show.flyer || "",
       file_id: show.file_id || ""
     });
-	window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const deleteShow = async (id) => {
     if (!window.confirm("Excluir este show?")) return;
-	
-	window.scrollTo({ top: 0, behavior: 'smooth' });
+    
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 
     try {
       // Busca o show para pegar o file_id antes de deletar
@@ -314,6 +337,7 @@ function AdminPanel() {
 
       <div style={styles.statusBanner}>
         <span style={styles.statusIndicator}>✓</span> API Online - Conectado ao Supabase
+        {userEmail && <span style={{ marginLeft: 20, fontSize: 14 }}>• {userEmail}</span>}
       </div>
 
       <form onSubmit={saveShow} style={styles.form}>
@@ -463,22 +487,42 @@ function AdminPanel() {
 ============================ */
 export default function AdminPage() {
   const [auth, setAuth] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (sessionStorage.getItem("adminAuth") === "true") {
-      setAuth(true);
-    }
+    // Verifica se já existe uma sessão ativa
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setAuth(!!session);
+      setLoading(false);
+    });
+
+    // Escuta mudanças no estado de autenticação
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setAuth(!!session);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setAuth(false);
+  };
+
+  if (loading) {
+    return (
+      <div style={styles.loginWrapper}>
+        <p style={{ color: '#fff' }}>Carregando...</p>
+      </div>
+    );
+  }
 
   if (!auth) return <LoginForm onLogin={setAuth} />;
 
   return (
     <>
       <button
-        onClick={() => {
-          sessionStorage.removeItem("adminAuth");
-          window.location.href = '/' 
-        }}
+        onClick={handleLogout}
         style={styles.logout}
       >
         Sair
