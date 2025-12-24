@@ -2,69 +2,78 @@ import React, { useState, useEffect, useCallback } from "react";
 import { supabase } from "./lib/supabase";
 
 /* ============================
-   IMAGEKIT HELPERS
+   SUPABASE STORAGE HELPERS
 ============================ */
-// Helper function to check if URL needs ImageKit upload
-function needsImageKitUpload(url) {
-  if (!url) return false;
-  
-  const redirectUrls = (process.env.REACT_APP_IMAGEKIT_REDIRECT_URLS || '')
-    .split(',')
-    .map(prefix => prefix.trim())
-    .filter(Boolean);
-  
-  return redirectUrls.some(prefix => url.startsWith(prefix));
-}
+const STORAGE_BUCKET = 'flyers'; // Nome do bucket no Supabase Storage
 
-// Helper function to upload image to ImageKit and get the new URL and fileId
-async function uploadToImageKit(imageUrl) {
+// Helper para fazer upload de imagem para o Supabase Storage
+async function uploadToSupabase(file) {
   try {
-    const baseUrl = window.location.origin;
-    const url = `${baseUrl}/.netlify/functions/upload-to-imagekit?url=${encodeURIComponent(imageUrl)}`;
+    // Gera um nome único para o arquivo
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+    const filePath = fileName;
 
-    const response = await fetch(url);
-    const data = await response.json();
+    // Faz o upload do arquivo
+    const { error } = await supabase.storage
+      .from(STORAGE_BUCKET)
+      .upload(filePath, file, {
+        cacheControl: '3600',
+        upsert: false
+      });
 
-    if (response.ok && data.url && data.fileId) {
-      return {
-        url: data.url,
-        fileId: data.fileId
-      };
-    } else {
-      throw new Error(data.error || 'Falha ao enviar imagem para ImageKit');
-    }
+    if (error) throw error;
+
+    // Obtém a URL pública do arquivo
+    const { data: { publicUrl } } = supabase.storage
+      .from(STORAGE_BUCKET)
+      .getPublicUrl(filePath);
+
+    return {
+      url: publicUrl,
+      path: filePath
+    };
   } catch (error) {
-    console.error('Erro uploadToImageKit:', error);
+    console.error('Erro uploadToSupabase:', error);
     throw error;
   }
 }
 
-// Helper function to delete image from ImageKit
-async function deleteFromImageKit(fileId) {
+// Helper para deletar imagem do Supabase Storage
+async function deleteFromSupabase(filePath) {
   try {
-    const baseUrl = window.location.origin;
-    const url = `${baseUrl}/.netlify/functions/delete_imagekit`;
+    if (!filePath) return false;
 
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        fileIds: [fileId]
-      })
-    });
+    const { error } = await supabase.storage
+      .from(STORAGE_BUCKET)
+      .remove([filePath]);
 
-    const data = await response.json();
+    if (error) throw error;
 
-    if (response.ok && data.success && data.deleted > 0) {
-      return true;
-    } else {
-      throw new Error(data.error || 'Falha ao excluir imagem do ImageKit');
-    }
+    return true;
   } catch (error) {
-    console.error('Erro deleteFromImageKit:', error);
+    console.error('Erro deleteFromSupabase:', error);
     throw error;
+  }
+}
+
+// Helper para extrair o path do arquivo da URL
+function extractFilePathFromUrl(url) {
+  if (!url) return null;
+  
+  try {
+    // Extrai o path após o nome do bucket na URL
+    const bucketUrl = `${STORAGE_BUCKET}/`;
+    const index = url.indexOf(bucketUrl);
+    
+    if (index !== -1) {
+      return url.substring(index + bucketUrl.length);
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('Erro ao extrair path:', error);
+    return null;
   }
 }
 
@@ -140,9 +149,10 @@ function AdminPanel() {
   const [shows, setShows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState(null);
-  const [apiStatus, setApiStatus] = useState("online");
   const [message, setMessage] = useState("");
   const [userEmail, setUserEmail] = useState("");
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [uploadProgress, setUploadProgress] = useState(false);
 
   const [formData, setFormData] = useState({
     artista: "",
@@ -150,8 +160,7 @@ function AdminPanel() {
     data_fim: "",
     local: "",
     cidade: "",
-    flyer: "",
-    file_id: ""
+    flyer: ""
   });
 
   const showMessage = useCallback((text, type = 'success') => {
@@ -175,9 +184,6 @@ function AdminPanel() {
 
     if (!error) {
       setShows(data || []);
-      setApiStatus("online");
-    } else {
-      setApiStatus("offline");
     }
     setLoading(false);
   }, []);
@@ -195,51 +201,69 @@ function AdminPanel() {
 
   const resetForm = () => {
     setEditingId(null);
+    setSelectedFile(null);
     setFormData({
       artista: "",
       data_inicio: "",
       data_fim: "",
       local: "",
       cidade: "",
-      flyer: "",
-      file_id: ""
+      flyer: ""
     });
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validar tipo de arquivo
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
+      if (!validTypes.includes(file.type)) {
+        showMessage('Por favor, selecione uma imagem válida (JPG, PNG, WEBP ou GIF)', 'error');
+        e.target.value = '';
+        return;
+      }
+
+      // Validar tamanho (max 5MB)
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      if (file.size > maxSize) {
+        showMessage('A imagem deve ter no máximo 5MB', 'error');
+        e.target.value = '';
+        return;
+      }
+
+      setSelectedFile(file);
+    }
   };
 
   const saveShow = async (e) => {
     e.preventDefault();
 
-    let { artista, data_inicio, data_fim, local, cidade, flyer, file_id: currentFileId } = formData;
-    let file_id = currentFileId || '';
-    const oldFileId = currentFileId;
-    const oldFlyer = editingId ? shows.find(s => s.id === editingId)?.flyer : null;
+    let { artista, data_inicio, data_fim, local, cidade, flyer } = formData;
+    let newFlyerUrl = flyer;
+    const oldFlyerPath = flyer ? extractFilePathFromUrl(flyer) : null;
 
     try {
-      // Se está editando, o flyer mudou, e existe file_id anterior, deletar a imagem antiga
-      if (editingId && oldFileId && oldFileId.trim() !== '' && flyer !== oldFlyer) {
-        try {
-          console.log('Tentando deletar imagem anterior. File ID:', oldFileId);
-          const deleteResult = await deleteFromImageKit(oldFileId);
-          console.log('Resultado da exclusão:', deleteResult);
-          showMessage('Imagem anterior removida do ImageKit', 'success');
-          file_id = '';
-        } catch (error) {
-          console.error('Erro ao deletar imagem anterior:', error);
-          showMessage('Aviso: Não foi possível remover imagem anterior', 'error');
-        }
-      }
+      // Se há um arquivo selecionado, fazer upload
+      if (selectedFile) {
+        setUploadProgress(true);
+        showMessage('Fazendo upload da imagem...', 'success');
 
-      // Check if flyer URL needs to be uploaded to ImageKit
-      if (flyer && needsImageKitUpload(flyer)) {
-        showMessage('Processando URL do flyer...', 'success');
+        // Se está editando e existe uma imagem anterior, deletar
+        if (editingId && oldFlyerPath) {
+          try {
+            await deleteFromSupabase(oldFlyerPath);
+            showMessage('Imagem anterior removida', 'success');
+          } catch (error) {
+            console.error('Erro ao deletar imagem anterior:', error);
+          }
+        }
+
+        // Upload da nova imagem
+        const uploadResult = await uploadToSupabase(selectedFile);
+        newFlyerUrl = uploadResult.url;
         
-        const uploadResult = await uploadToImageKit(flyer);
-        flyer = uploadResult.url;
-        file_id = uploadResult.fileId;
-        showMessage('Flyer enviado para ImageKit com sucesso!', 'success');
-      } else if (editingId && flyer === oldFlyer) {
-        // Se está editando mas não mudou o flyer, mantém o file_id anterior
-        file_id = oldFileId || '';
+        showMessage('Imagem enviada com sucesso!', 'success');
+        setUploadProgress(false);
       }
 
       const payload = {
@@ -248,8 +272,7 @@ function AdminPanel() {
         data_fim: data_fim || null,
         local,
         cidade,
-        flyer: flyer || null,
-        file_id: file_id || null
+        flyer: newFlyerUrl || null
       };
 
       let response;
@@ -275,19 +298,20 @@ function AdminPanel() {
     } catch (error) {
       console.error('Erro ao salvar:', error);
       showMessage(`Erro ao salvar show: ${error.message}`, 'error');
+      setUploadProgress(false);
     }
   };
 
   const editShow = (show) => {
     setEditingId(show.id);
+    setSelectedFile(null);
     setFormData({
       artista: show.artista,
       data_inicio: show.data_inicio,
       data_fim: show.data_fim || "",
       local: show.local,
       cidade: show.cidade,
-      flyer: show.flyer || "",
-      file_id: show.file_id || ""
+      flyer: show.flyer || ""
     });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -298,22 +322,26 @@ function AdminPanel() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
     try {
-      // Busca o show para pegar o file_id antes de deletar
+      // Busca o show para pegar o flyer antes de deletar
       const showToDelete = shows.find(s => s.id === id);
       
-      // Se existe file_id, tenta deletar do ImageKit
-      if (showToDelete?.file_id && showToDelete.file_id.trim() !== '') {
-        try {
-          console.log('Tentando deletar imagem do ImageKit. File ID:', showToDelete.file_id);
-          await deleteFromImageKit(showToDelete.file_id);
-          showMessage('Imagem removida do ImageKit', 'success');
-        } catch (error) {
-          console.error('Erro ao deletar imagem do ImageKit:', error);
-          showMessage('Aviso: Não foi possível remover a imagem do ImageKit', 'error');
+      // Se existe flyer, extrair o path e tentar deletar do Storage
+      if (showToDelete?.flyer && showToDelete.flyer.trim() !== '') {
+        const flyerPath = extractFilePathFromUrl(showToDelete.flyer);
+        
+        if (flyerPath) {
+          try {
+            console.log('Tentando deletar imagem do Storage. Path:', flyerPath);
+            await deleteFromSupabase(flyerPath);
+            showMessage('Imagem removida do Storage', 'success');
+          } catch (error) {
+            console.error('Erro ao deletar imagem do Storage:', error);
+            showMessage('Aviso: Não foi possível remover a imagem do Storage', 'error');
+          }
         }
       }
 
-      // Deleta o show do Supabase
+      // Deleta o show do banco
       const response = await supabase.from("shows").delete().eq("id", id);
       
       if (!response.error) {
@@ -336,7 +364,7 @@ function AdminPanel() {
       </h1>
 
       <div style={styles.statusBanner}>
-        <span style={styles.statusIndicator}>✓</span> API Online - Conectado ao Supabase
+        <span style={styles.statusIndicator}>✔</span> API Online - Conectado ao Supabase
         {userEmail && <span style={{ marginLeft: 20, fontSize: 14 }}>• {userEmail}</span>}
       </div>
 
@@ -394,16 +422,42 @@ function AdminPanel() {
           style={styles.input}
         />
 
-        <label style={styles.label}>URL do Flyer:</label>
+        <label style={styles.label}>
+          Imagem do Flyer:
+          {formData.flyer && (
+            <span style={{ marginLeft: 10, color: '#4ade80', fontSize: 12 }}>
+              (Imagem atual será mantida se não selecionar nova)
+            </span>
+          )}
+        </label>
         <input
-          placeholder="https://..."
-          value={formData.flyer}
-          onChange={(e) => setFormData({ ...formData, flyer: e.target.value })}
-          style={styles.input}
+          type="file"
+          accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
+          onChange={handleFileChange}
+          style={{
+            ...styles.input,
+            padding: 8,
+            cursor: 'pointer'
+          }}
         />
+        {selectedFile && (
+          <p style={{ fontSize: 12, color: '#4ade80', marginTop: 5 }}>
+            Arquivo selecionado: {selectedFile.name} ({(selectedFile.size / 1024).toFixed(2)} KB)
+          </p>
+        )}
+        {formData.flyer && !selectedFile && (
+          <p style={{ fontSize: 12, color: '#60a5fa', marginTop: 5 }}>
+            <a href={formData.flyer} target="_blank" rel="noopener noreferrer" style={{ color: '#60a5fa' }}>
+              Ver imagem atual
+            </a>
+          </p>
+        )}
 
-        <button style={styles.addButton}>
-          {editingId ? "Salvar Alteração" : "Adicionar Show"}
+        <button 
+          style={styles.addButton}
+          disabled={uploadProgress}
+        >
+          {uploadProgress ? "Enviando imagem..." : editingId ? "Salvar Alteração" : "Adicionar Show"}
         </button>
 
         {editingId && (
