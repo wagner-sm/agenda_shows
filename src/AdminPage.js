@@ -44,12 +44,18 @@ async function deleteFromSupabase(filePath) {
   try {
     if (!filePath) return false;
 
+    console.log('Deletando arquivo do Storage:', filePath);
+
     const { error } = await supabase.storage
       .from(STORAGE_BUCKET)
       .remove([filePath]);
 
-    if (error) throw error;
+    if (error) {
+      console.error('Erro no deleteFromSupabase:', error);
+      throw error;
+    }
 
+    console.log('Arquivo deletado com sucesso:', filePath);
     return true;
   } catch (error) {
     console.error('Erro deleteFromSupabase:', error);
@@ -62,14 +68,27 @@ function extractFilePathFromUrl(url) {
   if (!url) return null;
   
   try {
-    // Extrai o path após o nome do bucket na URL
-    const bucketUrl = `${STORAGE_BUCKET}/`;
-    const index = url.indexOf(bucketUrl);
+    // Remove espaços em branco
+    url = url.trim();
     
-    if (index !== -1) {
-      return url.substring(index + bucketUrl.length);
+    console.log('Extraindo path da URL:', url);
+    
+    // Tenta extrair o path de diferentes formatos de URL do Supabase
+    // Formato: https://[projeto].supabase.co/storage/v1/object/public/flyers/arquivo.jpg
+    const patterns = [
+      new RegExp(`/storage/v1/object/public/${STORAGE_BUCKET}/(.+)$`),
+      new RegExp(`/${STORAGE_BUCKET}/(.+)$`),
+    ];
+    
+    for (const pattern of patterns) {
+      const match = url.match(pattern);
+      if (match && match[1]) {
+        console.log('Path extraído:', match[1]);
+        return match[1];
+      }
     }
     
+    console.warn('Não foi possível extrair o path da URL:', url);
     return null;
   } catch (error) {
     console.error('Erro ao extrair path:', error);
@@ -242,6 +261,12 @@ function AdminPanel() {
     let newFlyerUrl = flyer;
     const oldFlyerPath = flyer ? extractFilePathFromUrl(flyer) : null;
 
+    console.log('=== SALVANDO SHOW ===');
+    console.log('Editando ID:', editingId);
+    console.log('Old flyer URL:', flyer);
+    console.log('Old flyer path:', oldFlyerPath);
+    console.log('Novo arquivo selecionado:', selectedFile?.name);
+
     try {
       // Se há um arquivo selecionado, fazer upload
       if (selectedFile) {
@@ -251,16 +276,23 @@ function AdminPanel() {
         // Se está editando e existe uma imagem anterior, deletar
         if (editingId && oldFlyerPath) {
           try {
-            await deleteFromSupabase(oldFlyerPath);
-            showMessage('Imagem anterior removida', 'success');
+            console.log('Deletando imagem anterior:', oldFlyerPath);
+            const deleted = await deleteFromSupabase(oldFlyerPath);
+            
+            if (deleted) {
+              showMessage('Imagem anterior removida do Storage', 'success');
+            }
           } catch (error) {
             console.error('Erro ao deletar imagem anterior:', error);
+            showMessage('Aviso: Não foi possível remover a imagem anterior', 'error');
+            // Continua mesmo se falhar ao deletar a imagem anterior
           }
         }
 
         // Upload da nova imagem
         const uploadResult = await uploadToSupabase(selectedFile);
         newFlyerUrl = uploadResult.url;
+        console.log('Nova URL do flyer:', newFlyerUrl);
         
         showMessage('Imagem enviada com sucesso!', 'success');
         setUploadProgress(false);
@@ -322,26 +354,42 @@ function AdminPanel() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
     try {
+      console.log('=== EXCLUINDO SHOW ===');
+      console.log('Show ID:', id);
+
       // Busca o show para pegar o flyer antes de deletar
       const showToDelete = shows.find(s => s.id === id);
+      console.log('Show encontrado:', showToDelete);
       
       // Se existe flyer, extrair o path e tentar deletar do Storage
       if (showToDelete?.flyer && showToDelete.flyer.trim() !== '') {
+        console.log('URL do flyer:', showToDelete.flyer);
+        
         const flyerPath = extractFilePathFromUrl(showToDelete.flyer);
+        console.log('Path extraído:', flyerPath);
         
         if (flyerPath) {
           try {
             console.log('Tentando deletar imagem do Storage. Path:', flyerPath);
-            await deleteFromSupabase(flyerPath);
-            showMessage('Imagem removida do Storage', 'success');
+            const deleted = await deleteFromSupabase(flyerPath);
+            
+            if (deleted) {
+              showMessage('Imagem removida do Storage com sucesso', 'success');
+            }
           } catch (error) {
             console.error('Erro ao deletar imagem do Storage:', error);
+            // Continua mesmo se falhar ao deletar a imagem
             showMessage('Aviso: Não foi possível remover a imagem do Storage', 'error');
           }
+        } else {
+          console.warn('Não foi possível extrair o path da imagem');
         }
+      } else {
+        console.log('Show não possui flyer ou flyer está vazio');
       }
 
       // Deleta o show do banco
+      console.log('Deletando show do banco de dados...');
       const response = await supabase.from("shows").delete().eq("id", id);
       
       if (!response.error) {
@@ -349,13 +397,14 @@ function AdminPanel() {
         loadShows();
         resetForm();
       } else {
+        console.error('Erro ao deletar do banco:', response.error);
         showMessage(response.error.message, 'error');
       }
     } catch (error) {
       console.error('Erro ao excluir:', error);
       showMessage(`Erro ao excluir: ${error.message}`, 'error');
     }
-  };
+  };  
 
   return (
     <div style={styles.container}>
@@ -364,7 +413,7 @@ function AdminPanel() {
       </h1>
 
       <div style={styles.statusBanner}>
-        <span style={styles.statusIndicator}>✔</span> API Online - Conectado ao Supabase
+        <span style={styles.statusIndicator}>✓</span> API Online - Conectado ao Supabase
         {userEmail && <span style={{ marginLeft: 20, fontSize: 14 }}>• {userEmail}</span>}
       </div>
 
@@ -483,7 +532,7 @@ function AdminPanel() {
         }}>
           {message.text}
         </div>
-      )}
+      )}    
 
       {loading ? (
         <p>Carregando...</p>
@@ -685,7 +734,8 @@ const styles = {
     borderCollapse: "collapse",
     background: "#363636",
     borderRadius: 8,
-    overflow: "hidden"
+    overflow: "hidden",
+    marginTop: 30
   },
   tableHeader: {
     background: "#2b2b2b"
