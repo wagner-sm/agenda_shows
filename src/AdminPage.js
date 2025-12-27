@@ -9,32 +9,45 @@ const STORAGE_BUCKET = 'flyers'; // Nome do bucket no Supabase Storage
 // Helper para fazer upload de imagem para o Supabase Storage
 async function uploadToSupabase(file) {
   try {
-    // Gera um nome único para o arquivo
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
-    const filePath = fileName;
+    const fileExt = file.name.split(".").pop();
+    const fileName = `${Date.now()}-${Math.random()
+      .toString(36)
+      .slice(2)}.${fileExt}`;
 
-    // Faz o upload do arquivo
-    const { error } = await supabase.storage
+    // 1️⃣ Upload sem cache + contentType explícito
+    const { error: uploadError } = await supabase.storage
       .from(STORAGE_BUCKET)
-      .upload(filePath, file, {
-        cacheControl: '3600',
-        upsert: false
+      .upload(fileName, file, {
+        upsert: false,
+        contentType: file.type,
+        cacheControl: "no-cache"
       });
 
-    if (error) throw error;
+    if (uploadError) throw uploadError;
 
-    // Obtém a URL pública do arquivo
-    const { data: { publicUrl } } = supabase.storage
+    // 2️⃣ Delay OBRIGATÓRIO (Firefox / Edge / Safari)
+    await new Promise((resolve) => setTimeout(resolve, 600));
+
+    // 3️⃣ Gera URL pública (única URL válida para browser)
+    const { data } = supabase.storage
       .from(STORAGE_BUCKET)
-      .getPublicUrl(filePath);
+      .getPublicUrl(fileName);
+
+    if (!data?.publicUrl) {
+      throw new Error("Falha ao gerar URL pública");
+    }
+
+    // 4️⃣ Garantia extra: nunca aceitar URL sem /public/
+    if (!data.publicUrl.includes("/object/public/")) {
+      throw new Error("URL inválida (endpoint não público)");
+    }
 
     return {
-      url: publicUrl,
-      path: filePath
+      url: data.publicUrl,
+      path: fileName
     };
   } catch (error) {
-    console.error('Erro uploadToSupabase:', error);
+    console.error("Erro uploadToSupabase:", error);
     throw error;
   }
 }
