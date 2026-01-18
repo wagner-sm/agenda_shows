@@ -367,42 +367,7 @@ function AdminPanel() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
     try {
-      console.log('=== EXCLUINDO SHOW ===');
-      console.log('Show ID:', id);
-
-      // Busca o show para pegar o flyer antes de deletar
-      const showToDelete = shows.find(s => s.id === id);
-      console.log('Show encontrado:', showToDelete);
-      
-      // Se existe flyer, extrair o path e tentar deletar do Storage
-      if (showToDelete?.flyer && showToDelete.flyer.trim() !== '') {
-        console.log('URL do flyer:', showToDelete.flyer);
-        
-        const flyerPath = extractFilePathFromUrl(showToDelete.flyer);
-        console.log('Path extraído:', flyerPath);
-        
-        if (flyerPath) {
-          try {
-            console.log('Tentando deletar imagem do Storage. Path:', flyerPath);
-            const deleted = await deleteFromSupabase(flyerPath);
-            
-            if (deleted) {
-              showMessage('Imagem removida do Storage com sucesso', 'success');
-            }
-          } catch (error) {
-            console.error('Erro ao deletar imagem do Storage:', error);
-            // Continua mesmo se falhar ao deletar a imagem
-            showMessage('Aviso: Não foi possível remover a imagem do Storage', 'error');
-          }
-        } else {
-          console.warn('Não foi possível extrair o path da imagem');
-        }
-      } else {
-        console.log('Show não possui flyer ou flyer está vazio');
-      }
-
-      // Deleta o show do banco
-      console.log('Deletando show do banco de dados...');
+      // Deleta o show do banco (a trigger do banco cuidará de deletar a imagem do Storage)
       const response = await supabase.from("shows").delete().eq("id", id);
       
       if (!response.error) {
@@ -410,14 +375,13 @@ function AdminPanel() {
         loadShows();
         resetForm();
       } else {
-        console.error('Erro ao deletar do banco:', response.error);
         showMessage(response.error.message, 'error');
       }
     } catch (error) {
       console.error('Erro ao excluir:', error);
       showMessage(`Erro ao excluir: ${error.message}`, 'error');
     }
-  };  
+  };
 
   return (
     <div style={styles.container}>
