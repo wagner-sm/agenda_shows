@@ -15,12 +15,10 @@ async function uploadToSupabase(file) {
       .upload(fileName, file, {
         upsert: false,
         contentType: file.type,
-        cacheControl: "no-cache"
+        cacheControl: "no-cache",
       });
 
     if (uploadError) throw uploadError;
-
-    await new Promise((resolve) => setTimeout(resolve, 600));
 
     const { data } = supabase.storage
       .from(STORAGE_BUCKET)
@@ -30,19 +28,16 @@ async function uploadToSupabase(file) {
       throw new Error("Falha ao gerar URL pública");
     }
 
-    if (!data.publicUrl.includes("/object/public/")) {
-      throw new Error("URL inválida (endpoint não público)");
-    }
-
     return {
       url: data.publicUrl,
-      path: fileName
+      path: fileName,
     };
   } catch (error) {
     console.error("Erro uploadToSupabase:", error);
     throw error;
   }
 }
+
 
 async function deleteFromSupabase(filePath) {
   try {
@@ -350,39 +345,63 @@ function AdminPanel() {
   };
 
   const deleteShow = async (id) => {
-    if (!window.confirm("Tem certeza que deseja deletar este show?")) return;
+  if (!window.confirm("Tem certeza que deseja deletar este show?")) return;
 
-    try {
-      const showToDelete = shows.find(s => s.id === id);
-      let flyerPath = null;
-      
-      if (showToDelete?.flyer) {
-        flyerPath = extractFilePathFromUrl(showToDelete.flyer);
-        
-        if (flyerPath) {
-          try {
-            await deleteFromSupabase(flyerPath);
-            showMessage('Imagem removida do Storage', 'success');
-          } catch (error) {
-            console.error('Erro ao deletar imagem:', error);
-          }
-        }
-      }
+  try {
+    // 1️⃣ Encontra o show
+    const showToDelete = shows.find((s) => s.id === id);
 
-      const { error } = await supabase
-        .from("shows")
-        .delete()
-        .eq("id", id);
-
-      if (error) throw error;
-
-      showMessage("✅ Show deletado com sucesso!", 'success');
-      loadShows();
-    } catch (error) {
-      console.error('Erro ao deletar show:', error);
-      showMessage(`❌ Erro ao deletar: ${error.message}`, 'error');
+    let flyerPath = null;
+    if (showToDelete?.flyer) {
+      flyerPath = extractFilePathFromUrl(showToDelete.flyer);
     }
-  };
+
+    // 2️⃣ Deleta o show da tabela shows
+    const { error: deleteError } = await supabase
+      .from("shows")
+      .delete()
+      .eq("id", id);
+
+    if (deleteError) throw deleteError;
+
+    // 3️⃣ Deleta o arquivo do Storage
+    if (flyerPath) {
+      try {
+        await deleteFromSupabase(flyerPath);
+      } catch (storageError) {
+        console.error(
+          "Erro ao deletar arquivo do Storage:",
+          storageError
+        );
+      }
+    }
+
+    // 4️⃣ Atualiza queue_storage_deletes.processed = true
+    if (flyerPath) {
+      const { error: updateError } = await supabase
+        .from("queue_storage_deletes")
+        .update({ processed: true })
+        .eq("name", flyerPath);
+
+      if (updateError) {
+        console.error(
+          "Erro ao atualizar queue_storage_deletes.processed:",
+          updateError
+        );
+      }
+    }
+
+    // 5️⃣ Feedback + reload
+    showMessage("✅ Show deletado com sucesso!", "success");
+    loadShows();
+
+  } catch (error) {
+    console.error("Erro ao deletar show:", error);
+    showMessage(`❌ Erro ao deletar: ${error.message}`, "error");
+  }
+};
+
+
 
   return (
     <div style={styles.container}>
