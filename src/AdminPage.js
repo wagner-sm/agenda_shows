@@ -207,6 +207,13 @@ function AdminPanel() {
     });
   };
 
+  const handleInputChange = (field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -231,11 +238,32 @@ function AdminPanel() {
   const saveShow = async (e) => {
     e.preventDefault();
 
-    let { artista, data_inicio, data_fim, local, cidade, flyer } = formData;
-    let newFlyerUrl = flyer;
-    const oldFlyerPath = flyer ? extractFilePathFromUrl(flyer) : null;
+    // Validações básicas
+    if (!formData.artista || !formData.artista.trim()) {
+      showMessage('O nome do artista é obrigatório', 'error');
+      return;
+    }
+
+    if (!formData.data_inicio || !formData.data_inicio.trim()) {
+      showMessage('A data de início é obrigatória', 'error');
+      return;
+    }
+
+    if (!formData.local || !formData.local.trim()) {
+      showMessage('O local é obrigatório', 'error');
+      return;
+    }
+
+    if (!formData.cidade || !formData.cidade.trim()) {
+      showMessage('A cidade é obrigatória', 'error');
+      return;
+    }
+
+    let newFlyerUrl = formData.flyer;
+    const oldFlyerPath = formData.flyer ? extractFilePathFromUrl(formData.flyer) : null;
 
     try {
+      // Upload de imagem
       if (selectedFile) {
         setUploadProgress(true);
         showMessage('Fazendo upload da imagem...', 'success');
@@ -246,7 +274,6 @@ function AdminPanel() {
             showMessage('Imagem anterior removida do Storage', 'success');
           } catch (error) {
             console.error('Erro ao deletar imagem anterior:', error);
-            showMessage('Aviso: Não foi possível remover a imagem anterior', 'error');
           }
         }
 
@@ -257,14 +284,31 @@ function AdminPanel() {
         setUploadProgress(false);
       }
 
-      const showData = {
-        artista,
-        data_inicio,
-        data_fim,
-        local,
-        cidade,
-        flyer: newFlyerUrl
+      // ✅ SOLUÇÃO DEFINITIVA: Preparar dados de forma limpa
+      const prepararValor = (valor) => {
+        // Se for null ou undefined, retorna null
+        if (valor === null || valor === undefined) return null;
+        
+        // Converte para string e remove espaços
+        const valorString = String(valor).trim();
+        
+        // Se ficou vazio após trim, retorna null
+        if (valorString === '') return null;
+        
+        // Retorna o valor limpo
+        return valorString;
       };
+
+      const showData = {
+        artista: prepararValor(formData.artista),
+        data_inicio: prepararValor(formData.data_inicio),
+        data_fim: prepararValor(formData.data_fim), // NULL se vazio
+        local: prepararValor(formData.local),
+        cidade: prepararValor(formData.cidade),
+        flyer: prepararValor(newFlyerUrl) // NULL se vazio
+      };
+
+      console.log('Dados prontos para envio:', showData);
 
       if (editingId) {
         const { error } = await supabase
@@ -321,7 +365,6 @@ function AdminPanel() {
             showMessage('Imagem removida do Storage', 'success');
           } catch (error) {
             console.error('Erro ao deletar imagem:', error);
-            showMessage('Aviso: Não foi possível remover a imagem do Storage', 'error');
           }
         }
       }
@@ -333,22 +376,6 @@ function AdminPanel() {
 
       if (error) throw error;
 
-      // Atualizar queue_storage_deletes para marcar como processado
-      if (flyerPath) {
-        try {
-          const { error: queueError } = await supabase
-            .from("queue_storage_deletes")
-            .update({ processed: true })
-            .eq("name", flyerPath);
-
-          if (queueError) {
-            console.error('Erro ao atualizar queue_storage_deletes:', queueError);
-          }
-        } catch (error) {
-          console.error('Erro ao atualizar fila de exclusões:', error);
-        }
-      }
-
       showMessage("✅ Show deletado com sucesso!", 'success');
       loadShows();
     } catch (error) {
@@ -357,23 +384,17 @@ function AdminPanel() {
     }
   };
 
-  const handleInputChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
   return (
     <div style={styles.container}>
-      <div style={styles.title}>
-        <span style={styles.icon}>🎉</span>
-        <h1>Painel Administrativo - Shows</h1>
-      </div>
+      <h1 style={styles.title}>
+        <span style={styles.icon}>🎭</span>
+        Gerenciar Shows
+      </h1>
 
-      <form style={styles.form} onSubmit={saveShow}>
-        <h3 style={{ marginTop: 0 }}>{editingId ? "Editar Show" : "Adicionar Novo Show"}</h3>
-
+      <form onSubmit={saveShow} style={styles.form}>
         <div style={styles.row}>
           <div style={styles.col}>
-            <label style={styles.label}>Artista *</label>
+            <label style={styles.label}>Artista/Banda *</label>
             <input
               style={styles.input}
               value={formData.artista}
@@ -389,7 +410,7 @@ function AdminPanel() {
               style={styles.input}
               value={formData.local}
               onChange={(e) => handleInputChange("local", e.target.value)}
-              placeholder="Nome do local"
+              placeholder="Ex: Bar do João"
               required
             />
           </div>
@@ -408,7 +429,7 @@ function AdminPanel() {
           </div>
 
           <div style={styles.col}>
-            <label style={styles.label}>Data Fim</label>
+            <label style={styles.label}>Data Fim (opcional)</label>
             <input
               type="date"
               style={styles.input}
