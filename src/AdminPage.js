@@ -310,9 +310,10 @@ function AdminPanel() {
 
     try {
       const showToDelete = shows.find(s => s.id === id);
+      let flyerPath = null;
       
       if (showToDelete?.flyer) {
-        const flyerPath = extractFilePathFromUrl(showToDelete.flyer);
+        flyerPath = extractFilePathFromUrl(showToDelete.flyer);
         
         if (flyerPath) {
           try {
@@ -331,6 +332,22 @@ function AdminPanel() {
         .eq("id", id);
 
       if (error) throw error;
+
+      // Atualizar queue_storage_deletes para marcar como processado
+      if (flyerPath) {
+        try {
+          const { error: queueError } = await supabase
+            .from("queue_storage_deletes")
+            .update({ processed: true })
+            .eq("name", flyerPath);
+
+          if (queueError) {
+            console.error('Erro ao atualizar queue_storage_deletes:', queueError);
+          }
+        } catch (error) {
+          console.error('Erro ao atualizar fila de exclusões:', error);
+        }
+      }
 
       showMessage("✅ Show deletado com sucesso!", 'success');
       loadShows();
