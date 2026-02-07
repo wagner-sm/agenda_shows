@@ -367,7 +367,6 @@ function AdminPanel() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
     try {
-<<<<<<< HEAD
       console.log('=== EXCLUINDO SHOW ===');
       console.log('Show ID:', id);
 
