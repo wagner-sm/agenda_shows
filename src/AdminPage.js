@@ -60,7 +60,8 @@ function extractFilePathFromUrl(url) {
   if (!url) return null;
   
   try {
-    url = url.trim();
+    // Remove query string antes de processar
+    const cleanUrl = url.trim().split('?')[0];
     
     const patterns = [
       new RegExp(`/storage/v1/object/public/${STORAGE_BUCKET}/(.+)$`),
@@ -68,9 +69,10 @@ function extractFilePathFromUrl(url) {
     ];
     
     for (const pattern of patterns) {
-      const match = url.match(pattern);
+      const match = cleanUrl.match(pattern);
       if (match && match[1]) {
-        return match[1];
+        // Decodifica caracteres especiais no path (ex: espaços %20)
+        return decodeURIComponent(match[1]);
       }
     }
     
@@ -348,15 +350,27 @@ function AdminPanel() {
   if (!window.confirm("Tem certeza que deseja deletar este show?")) return;
 
   try {
-    // 1️⃣ Encontra o show
+    // 1️⃣ Encontra o show e extrai o path do flyer
     const showToDelete = shows.find((s) => s.id === id);
 
     let flyerPath = null;
     if (showToDelete?.flyer) {
       flyerPath = extractFilePathFromUrl(showToDelete.flyer);
+      console.log('Path extraído para deleção:', flyerPath);
     }
 
-    // 2️⃣ Deleta o show da tabela shows
+    // 2️⃣ Deleta o arquivo do Storage ANTES do banco
+    // (garante que o arquivo seja removido mesmo que o delete do banco falhe)
+    if (flyerPath) {
+      try {
+        await deleteFromSupabase(flyerPath);
+        console.log('Arquivo removido do Storage:', flyerPath);
+      } catch (storageError) {
+        console.error("Erro ao deletar arquivo do Storage:", storageError);
+      }
+    }
+
+    // 3️⃣ Deleta o show da tabela shows
     const { error: deleteError } = await supabase
       .from("shows")
       .delete()
@@ -364,34 +378,7 @@ function AdminPanel() {
 
     if (deleteError) throw deleteError;
 
-    // 3️⃣ Deleta o arquivo do Storage
-    if (flyerPath) {
-      try {
-        await deleteFromSupabase(flyerPath);
-      } catch (storageError) {
-        console.error(
-          "Erro ao deletar arquivo do Storage:",
-          storageError
-        );
-      }
-    }
-
-    // 4️⃣ Atualiza queue_storage_deletes.processed = true
-    if (flyerPath) {
-      const { error: updateError } = await supabase
-        .from("queue_storage_deletes")
-        .update({ processed: true })
-        .eq("name", flyerPath);
-
-      if (updateError) {
-        console.error(
-          "Erro ao atualizar queue_storage_deletes.processed:",
-          updateError
-        );
-      }
-    }
-
-    // 5️⃣ Feedback + reload
+    // 4️⃣ Feedback + reload
     showMessage("✅ Show deletado com sucesso!", "success");
     loadShows();
 
