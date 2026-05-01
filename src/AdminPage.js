@@ -43,18 +43,33 @@ async function deleteFromSupabase(filePath) {
   try {
     if (!filePath) return false;
 
-    const { error } = await supabase.storage
-      .from(STORAGE_BUCKET)
-      .remove([filePath]);
+    console.log('[Storage] Tentando remover via Edge Function:', filePath);
 
-    if (error) throw error;
+    const { data: { session } } = await supabase.auth.getSession();
 
+    const response = await fetch(
+      `${process.env.REACT_APP_SUPABASE_URL}/functions/v1/delete-flyer`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ filePath }),
+      }
+    );
+
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error);
+
+    console.log('[Storage] Removido com sucesso:', filePath);
     return true;
   } catch (error) {
-    console.error('Erro deleteFromSupabase:', error);
+    console.error('[Storage] Erro ao deletar arquivo:', filePath, error);
     throw error;
   }
 }
+
 
 function extractFilePathFromUrl(url) {
   if (!url) return null;
