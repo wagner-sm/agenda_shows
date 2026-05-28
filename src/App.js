@@ -1,24 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import "./App.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import ShowCard from "./components/ShowCard";
 import ImageModal from "./components/ImageModal";
 import AdminPage from "./AdminPage";
+import { parseISO } from "./lib/dateUtils";
 
-// 🔧 CONFIG SUPABASE (troque apenas isso)
 const SUPABASE_URL = process.env.REACT_APP_SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.REACT_APP_SUPABASE_ANON_KEY;
 
-// ✅ Função para datas ISO vindas do banco
-function parseISO(dateISO) {
-  if (!dateISO) return null;
-  return new Date(`${dateISO}T00:00:00`);
-}
-
-// ======================
-// Página de Shows
-// ======================
 function ShowsPage() {
   const [shows, setShows] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -26,90 +17,107 @@ function ShowsPage() {
   const [theme, setTheme] = useState("dark");
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    async function fetchShows() {
-      try {
-        const response = await fetch(
-          `${SUPABASE_URL}/rest/v1/shows?select=*`,
-          {
-            headers: {
-              apikey: SUPABASE_ANON_KEY,
-              Authorization: `Bearer ${SUPABASE_ANON_KEY}`
-            }
-          }
-        );
+  const backToTopRef = useRef(null);
 
-        if (!response.ok) {
-          throw new Error(`Erro HTTP: ${response.status}`);
+  const fetchShows = useCallback(async (signal) => {
+    try {
+      const response = await fetch(
+        `${SUPABASE_URL}/rest/v1/shows?select=*`,
+        {
+          headers: {
+            apikey: SUPABASE_ANON_KEY,
+            Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+          },
+          signal,
         }
+      );
 
-        return await response.json();
-      } catch (err) {
-        setError(err.message);
-        return [];
+      if (!response.ok) {
+        throw new Error(`Erro HTTP: ${response.status}`);
       }
+
+      return await response.json();
+    } catch (err) {
+      if (err.name !== "AbortError") {
+        setError(err.message);
+      }
+      return [];
     }
+  }, []);
+
+  const loadShows = useCallback(async () => {
+    const abortController = new AbortController();
 
     setLoading(true);
+    setError(null);
 
-    fetchShows().then(shows => {
+    const data = await fetchShows(abortController.signal);
+
+    if (!abortController.signal.aborted) {
       const hoje = new Date();
       hoje.setHours(0, 0, 0, 0);
 
-      const showsProcessados = shows
-        .map(show => {
-          if (!show.data_fim) {
-            show.data_fim = show.data_inicio;
-          }
-          return show;
-        })
+      const showsProcessados = data
+        .map((show) => ({
+          ...show,
+          data_fim: show.data_fim || show.data_inicio,
+        }))
         .sort((a, b) => {
           const dataA = parseISO(a.data_inicio);
           const dataB = parseISO(b.data_inicio);
 
-          // Ordena por data
           if (dataA.getTime() !== dataB.getTime()) {
             return dataA - dataB;
           }
 
-          // Se a data for igual, ordena por cidade
-          const cidadeComparison = (a.cidade || "").localeCompare(
-            b.cidade || "",
-            "pt-BR",
-            { sensitivity: "base", ignorePunctuation: true }
-          );
+          const cidadeCmp = (a.cidade || "").localeCompare(b.cidade || "", "pt-BR", {
+            sensitivity: "base",
+            ignorePunctuation: true,
+          });
 
-          if (cidadeComparison !== 0) {
-            return cidadeComparison;
-          }
+          if (cidadeCmp !== 0) return cidadeCmp;
 
-          // Se tudo igual, ordena por artista
           return a.artista.localeCompare(b.artista, "pt-BR", {
             sensitivity: "base",
-            ignorePunctuation: true
+            ignorePunctuation: true,
           });
         })
-        .filter(show => {
+        .filter((show) => {
           const dataFim = parseISO(show.data_fim);
           return dataFim >= hoje;
         });
 
       setShows(showsProcessados);
       setLoading(false);
+    }
+
+    return abortController;
+  }, [fetchShows]);
+
+  // Carrega os shows na montagem
+  useEffect(() => {
+    let abortController;
+
+    loadShows().then((ac) => {
+      abortController = ac;
     });
-  }, []);
+
+    return () => {
+      if (abortController) abortController.abort();
+    };
+  }, [loadShows]);
 
   // Tema claro / escuro
   useEffect(() => {
     document.body.className = theme === "light" ? "light-theme" : "";
   }, [theme]);
 
-  // Botão voltar ao topo
+  // Mostra/esconde botão voltar ao topo via classes CSS
   useEffect(() => {
-    const handleScroll = () => {
-      const btn = document.getElementById("backToTop");
-      if (!btn) return;
+    const btn = backToTopRef.current;
+    if (!btn) return;
 
+    const handleScroll = () => {
       if (window.pageYOffset > 300) {
         btn.classList.add("show");
       } else {
@@ -117,12 +125,16 @@ function ShowsPage() {
       }
     };
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const handleBackToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleRetry = () => {
+    loadShows();
   };
 
   return (
@@ -139,58 +151,49 @@ function ShowsPage() {
 
       <div className="shows-list" id="shows">
         {loading && (
-          <p style={{ color: "#ffb347", fontSize: "1.2rem", textAlign: "center", width: "100vw" }}>
-            Carregando shows...
-          </p>
+          <p className="status-message loading-message">Carregando shows...</p>
         )}
 
         {error && (
-          <div style={{ color: "#ffb347", fontSize: "1.2rem", textAlign: "center", width: "100vw" }}>
+          <div className="status-message error-container">
             <p>Erro ao carregar os shows: {error}</p>
-            <button
-              onClick={() => window.location.reload()}
-              style={{
-                background: "#ffb347",
-                color: "#181818",
-                border: "none",
-                padding: "10px 20px",
-                borderRadius: "5px",
-                cursor: "pointer",
-                marginTop: "15px"
-              }}
-            >
+            <button className="retry-btn" onClick={handleRetry}>
               Tentar Novamente
             </button>
           </div>
         )}
 
         {!loading && !error && shows.length === 0 && (
-          <p style={{ color: "#ffb347", fontSize: "1.2rem", textAlign: "center" }}>
+          <p className="status-message empty-message">
             Nenhum show cadastrado no momento.
           </p>
         )}
 
-        {!loading && !error && shows.map(show => (
-          <ShowCard
-            key={`${show.artista}-${show.data_inicio}-${show.cidade}`}
-            show={show}
-            onImageClick={setModalImg}
-          />
-        ))}
+        {!loading &&
+          !error &&
+          shows.map((show, index) => (
+            <ShowCard
+              key={show.id || `${show.artista}-${show.data_inicio}-${show.cidade}-${index}`}
+              show={show}
+              onImageClick={setModalImg}
+            />
+          ))}
       </div>
 
       <ImageModal src={modalImg} onClose={() => setModalImg(null)} />
 
-      <button id="backToTop" title="Voltar ao topo" onClick={handleBackToTop}>
+      <button
+        id="backToTop"
+        ref={backToTopRef}
+        title="Voltar ao topo"
+        onClick={handleBackToTop}
+      >
         <i className="fas fa-arrow-up"></i>
       </button>
     </>
   );
 }
 
-// ======================
-// App com Rotas
-// ======================
 export default function App() {
   return (
     <Router>
