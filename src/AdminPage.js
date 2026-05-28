@@ -1,101 +1,82 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { supabase } from "./lib/supabase";
+import { formatarData } from "./lib/dateUtils";
+import "./AdminPage.css";
 
-const STORAGE_BUCKET = 'flyers';
+const STORAGE_BUCKET = "flyers";
+
+// Utilitário: limpa valor para envio ao banco (null se vazio)
+function prepararValor(valor) {
+  if (valor === null || valor === undefined) return null;
+  const valorString = String(valor).trim();
+  return valorString === "" ? null : valorString;
+}
 
 async function uploadToSupabase(file) {
-  try {
-    const fileExt = file.name.split(".").pop();
-    const fileName = `${Date.now()}-${Math.random()
-      .toString(36)
-      .slice(2)}.${fileExt}`;
+  const fileExt = file.name.split(".").pop();
+  const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${fileExt}`;
 
-    const { error: uploadError } = await supabase.storage
-      .from(STORAGE_BUCKET)
-      .upload(fileName, file, {
-        upsert: false,
-        contentType: file.type,
-        cacheControl: "no-cache",
-      });
+  const { error: uploadError } = await supabase.storage
+    .from(STORAGE_BUCKET)
+    .upload(fileName, file, {
+      upsert: false,
+      contentType: file.type,
+      cacheControl: "no-cache",
+    });
 
-    if (uploadError) throw uploadError;
+  if (uploadError) throw uploadError;
 
-    const { data } = supabase.storage
-      .from(STORAGE_BUCKET)
-      .getPublicUrl(fileName);
+  const { data } = supabase.storage
+    .from(STORAGE_BUCKET)
+    .getPublicUrl(fileName);
 
-    if (!data?.publicUrl) {
-      throw new Error("Falha ao gerar URL pública");
-    }
-
-    return {
-      url: data.publicUrl,
-      path: fileName,
-    };
-  } catch (error) {
-    console.error("Erro uploadToSupabase:", error);
-    throw error;
+  if (!data?.publicUrl) {
+    throw new Error("Falha ao gerar URL pública");
   }
-}
 
+  return { url: data.publicUrl, path: fileName };
+}
 
 async function deleteFromSupabase(filePath) {
-  try {
-    if (!filePath) return false;
+  if (!filePath) return false;
 
-    console.log('[Storage] Tentando remover via Edge Function:', filePath);
+  const { data: { session } } = await supabase.auth.getSession();
 
-    const { data: { session } } = await supabase.auth.getSession();
+  const response = await fetch(
+    `${process.env.REACT_APP_SUPABASE_URL}/functions/v1/delete-flyer`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify({ filePath }),
+    }
+  );
 
-    const response = await fetch(
-      `${process.env.REACT_APP_SUPABASE_URL}/functions/v1/delete-flyer`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`,
-        },
-        body: JSON.stringify({ filePath }),
-      }
-    );
-
-    const result = await response.json();
-    if (!response.ok) throw new Error(result.error);
-
-    console.log('[Storage] Removido com sucesso:', filePath);
-    return true;
-  } catch (error) {
-    console.error('[Storage] Erro ao deletar arquivo:', filePath, error);
-    throw error;
-  }
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.error);
+  return true;
 }
-
 
 function extractFilePathFromUrl(url) {
   if (!url) return null;
-  
-  try {
-    // Remove query string antes de processar
-    const cleanUrl = url.trim().split('?')[0];
-    
-    const patterns = [
-      new RegExp(`/storage/v1/object/public/${STORAGE_BUCKET}/(.+)$`),
-      new RegExp(`/${STORAGE_BUCKET}/(.+)$`),
-    ];
-    
-    for (const pattern of patterns) {
-      const match = cleanUrl.match(pattern);
-      if (match && match[1]) {
-        // Decodifica caracteres especiais no path (ex: espaços %20)
-        return decodeURIComponent(match[1]);
-      }
+
+  const cleanUrl = url.trim().split("?")[0];
+
+  const patterns = [
+    new RegExp(`/storage/v1/object/public/${STORAGE_BUCKET}/(.+)$`),
+    new RegExp(`/${STORAGE_BUCKET}/(.+)$`),
+  ];
+
+  for (const pattern of patterns) {
+    const match = cleanUrl.match(pattern);
+    if (match && match[1]) {
+      return decodeURIComponent(match[1]);
     }
-    
-    return null;
-  } catch (error) {
-    console.error('Erro ao extrair path:', error);
-    return null;
   }
+
+  return null;
 }
 
 function LoginForm({ onLogin }) {
@@ -111,25 +92,22 @@ function LoginForm({ onLogin }) {
 
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
-        email: email,
-        password: password,
+        email,
+        password,
       });
 
       if (error) throw error;
-
-      if (data.session) {
-        onLogin(true);
-      }
-    } catch (error) {
-      setError(error.message || "Erro ao fazer login");
+      if (data.session) onLogin(true);
+    } catch (err) {
+      setError(err.message || "Erro ao fazer login");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={styles.loginWrapper}>
-      <form onSubmit={handleSubmit} style={styles.loginBox}>
+    <div className="admin-login-wrapper">
+      <form onSubmit={handleSubmit} className="admin-login-box">
         <h2>Admin Login</h2>
 
         <input
@@ -137,7 +115,7 @@ function LoginForm({ onLogin }) {
           placeholder="E-mail"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          style={styles.input}
+          className="admin-input"
           required
         />
 
@@ -146,13 +124,13 @@ function LoginForm({ onLogin }) {
           placeholder="Senha"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          style={styles.input}
+          className="admin-input"
           required
         />
 
-        {error && <p style={{ color: "#ff6b6b", fontSize: 14 }}>{error}</p>}
+        {error && <p className="admin-login-error">{error}</p>}
 
-        <button style={styles.addButton} disabled={loading}>
+        <button className="admin-add-btn" disabled={loading}>
           {loading ? "Entrando..." : "Entrar"}
         </button>
       </form>
@@ -164,7 +142,7 @@ function AdminPanel() {
   const [shows, setShows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState(null);
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(false);
 
@@ -174,18 +152,12 @@ function AdminPanel() {
     data_fim: "",
     local: "",
     cidade: "",
-    flyer: ""
+    flyer: "",
   });
 
-  const showMessage = useCallback((text, type = 'success') => {
+  const showMessage = useCallback((text, type = "success") => {
     setMessage({ text, type });
-    setTimeout(() => setMessage(""), 5000);
-  }, []);
-
-  const formatDateToBR = useCallback((dateString) => {
-    if (!dateString) return "-";
-    const [year, month, day] = dateString.split('-');
-    return `${day}/${month}/${year}`;
+    setTimeout(() => setMessage(null), 5000);
   }, []);
 
   const loadShows = useCallback(async () => {
@@ -196,11 +168,15 @@ function AdminPanel() {
       .select("*")
       .order("data_inicio", { ascending: true });
 
-    if (!error) {
+    if (error) {
+      showMessage(`Erro ao carregar shows: ${error.message}`, "error");
+      setShows([]);
+    } else {
       setShows(data || []);
     }
+
     setLoading(false);
-  }, []);
+  }, [showMessage]);
 
   useEffect(() => {
     loadShows();
@@ -215,59 +191,51 @@ function AdminPanel() {
       data_fim: "",
       local: "",
       cidade: "",
-      flyer: ""
+      flyer: "",
     });
   };
 
   const handleInputChange = (field, value) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
-      if (!validTypes.includes(file.type)) {
-        showMessage('Por favor, selecione uma imagem válida (JPG, PNG, WEBP ou GIF)', 'error');
-        e.target.value = '';
-        return;
-      }
+    if (!file) return;
 
-      const maxSize = 5 * 1024 * 1024;
-      if (file.size > maxSize) {
-        showMessage('A imagem deve ter no máximo 5MB', 'error');
-        e.target.value = '';
-        return;
-      }
-
-      setSelectedFile(file);
+    const validTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/gif"];
+    if (!validTypes.includes(file.type)) {
+      showMessage("Por favor, selecione uma imagem válida (JPG, PNG, WEBP ou GIF)", "error");
+      e.target.value = "";
+      return;
     }
+
+    if (file.size > 5 * 1024 * 1024) {
+      showMessage("A imagem deve ter no máximo 5MB", "error");
+      e.target.value = "";
+      return;
+    }
+
+    setSelectedFile(file);
   };
 
   const saveShow = async (e) => {
     e.preventDefault();
 
-    // Validações básicas
-    if (!formData.artista || !formData.artista.trim()) {
-      showMessage('O nome do artista é obrigatório', 'error');
+    if (!formData.artista?.trim()) {
+      showMessage("O nome do artista é obrigatório", "error");
       return;
     }
-
-    if (!formData.data_inicio || !formData.data_inicio.trim()) {
-      showMessage('A data de início é obrigatória', 'error');
+    if (!formData.data_inicio?.trim()) {
+      showMessage("A data de início é obrigatória", "error");
       return;
     }
-
-    if (!formData.local || !formData.local.trim()) {
-      showMessage('O local é obrigatório', 'error');
+    if (!formData.local?.trim()) {
+      showMessage("O local é obrigatório", "error");
       return;
     }
-
-    if (!formData.cidade || !formData.cidade.trim()) {
-      showMessage('A cidade é obrigatória', 'error');
+    if (!formData.cidade?.trim()) {
+      showMessage("A cidade é obrigatória", "error");
       return;
     }
 
@@ -275,75 +243,47 @@ function AdminPanel() {
     const oldFlyerPath = formData.flyer ? extractFilePathFromUrl(formData.flyer) : null;
 
     try {
-      // Upload de imagem
       if (selectedFile) {
         setUploadProgress(true);
-        showMessage('Fazendo upload da imagem...', 'success');
+        showMessage("Fazendo upload da imagem...", "success");
 
         if (editingId && oldFlyerPath) {
           try {
             await deleteFromSupabase(oldFlyerPath);
-            showMessage('Imagem anterior removida do Storage', 'success');
-          } catch (error) {
-            console.error('Erro ao deletar imagem anterior:', error);
+          } catch (err) {
+            console.error("Erro ao deletar imagem anterior:", err);
           }
         }
 
         const uploadResult = await uploadToSupabase(selectedFile);
         newFlyerUrl = uploadResult.url;
-
-        showMessage('Upload concluído! Salvando dados...', 'success');
         setUploadProgress(false);
       }
-
-      // ✅ SOLUÇÃO DEFINITIVA: Preparar dados de forma limpa
-      const prepararValor = (valor) => {
-        // Se for null ou undefined, retorna null
-        if (valor === null || valor === undefined) return null;
-        
-        // Converte para string e remove espaços
-        const valorString = String(valor).trim();
-        
-        // Se ficou vazio após trim, retorna null
-        if (valorString === '') return null;
-        
-        // Retorna o valor limpo
-        return valorString;
-      };
 
       const showData = {
         artista: prepararValor(formData.artista),
         data_inicio: prepararValor(formData.data_inicio),
-        data_fim: prepararValor(formData.data_fim), // NULL se vazio
+        data_fim: prepararValor(formData.data_fim),
         local: prepararValor(formData.local),
         cidade: prepararValor(formData.cidade),
-        flyer: prepararValor(newFlyerUrl) // NULL se vazio
+        flyer: prepararValor(newFlyerUrl),
       };
 
-      console.log('Dados prontos para envio:', showData);
-
       if (editingId) {
-        const { error } = await supabase
-          .from("shows")
-          .update(showData)
-          .eq("id", editingId);
-
+        const { error } = await supabase.from("shows").update(showData).eq("id", editingId);
         if (error) throw error;
-        showMessage("✅ Show atualizado com sucesso!", 'success');
+        showMessage("Show atualizado com sucesso!", "success");
       } else {
-        const { error } = await supabase
-          .from("shows")
-          .insert([showData]);
-
+        const { error } = await supabase.from("shows").insert([showData]);
         if (error) throw error;
-        showMessage("✅ Show adicionado com sucesso!", 'success');
+        showMessage("Show adicionado com sucesso!", "success");
       }
 
       resetForm();
       loadShows();
-    } catch (error) {
-      console.error('Erro ao salvar show:', error);
-      showMessage(`❌ Erro: ${error.message}`, 'error');
+    } catch (err) {
+      console.error("Erro ao salvar show:", err);
+      showMessage(`Erro: ${err.message}`, "error");
       setUploadProgress(false);
     }
   };
@@ -355,69 +295,53 @@ function AdminPanel() {
       data_fim: show.data_fim || "",
       local: show.local || "",
       cidade: show.cidade || "",
-      flyer: show.flyer || ""
+      flyer: show.flyer || "",
     });
     setEditingId(show.id);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const deleteShow = async (id) => {
-  if (!window.confirm("Tem certeza que deseja deletar este show?")) return;
+    if (!window.confirm("Tem certeza que deseja deletar este show?")) return;
 
-  try {
-    // 1️⃣ Encontra o show e extrai o path do flyer
-    const showToDelete = shows.find((s) => s.id === id);
+    try {
+      const showToDelete = shows.find((s) => s.id === id);
 
-    let flyerPath = null;
-    if (showToDelete?.flyer) {
-      flyerPath = extractFilePathFromUrl(showToDelete.flyer);
-      console.log('Path extraído para deleção:', flyerPath);
-    }
-
-    // 2️⃣ Deleta o arquivo do Storage ANTES do banco
-    // (garante que o arquivo seja removido mesmo que o delete do banco falhe)
-    if (flyerPath) {
-      try {
-        await deleteFromSupabase(flyerPath);
-        console.log('Arquivo removido do Storage:', flyerPath);
-      } catch (storageError) {
-        console.error("Erro ao deletar arquivo do Storage:", storageError);
+      if (showToDelete?.flyer) {
+        const flyerPath = extractFilePathFromUrl(showToDelete.flyer);
+        if (flyerPath) {
+          try {
+            await deleteFromSupabase(flyerPath);
+          } catch (err) {
+            console.error("Erro ao deletar arquivo do Storage:", err);
+          }
+        }
       }
+
+      const { error: deleteError } = await supabase.from("shows").delete().eq("id", id);
+      if (deleteError) throw deleteError;
+
+      showMessage("Show deletado com sucesso!", "success");
+      loadShows();
+    } catch (err) {
+      console.error("Erro ao deletar show:", err);
+      showMessage(`Erro ao deletar: ${err.message}`, "error");
     }
-
-    // 3️⃣ Deleta o show da tabela shows
-    const { error: deleteError } = await supabase
-      .from("shows")
-      .delete()
-      .eq("id", id);
-
-    if (deleteError) throw deleteError;
-
-    // 4️⃣ Feedback + reload
-    showMessage("✅ Show deletado com sucesso!", "success");
-    loadShows();
-
-  } catch (error) {
-    console.error("Erro ao deletar show:", error);
-    showMessage(`❌ Erro ao deletar: ${error.message}`, "error");
-  }
-};
-
-
+  };
 
   return (
-    <div style={styles.container}>
-      <h1 style={styles.title}>
-        <span style={styles.icon}>🎭</span>
+    <div className="admin-container">
+      <h1 className="admin-title">
+        <span className="admin-title-icon">🎭</span>
         Gerenciar Shows
       </h1>
 
-      <form onSubmit={saveShow} style={styles.form}>
-        <div style={styles.row}>
-          <div style={styles.col}>
-            <label style={styles.label}>Artista/Banda *</label>
+      <form onSubmit={saveShow} className="admin-form">
+        <div className="admin-row">
+          <div className="admin-col">
+            <label className="admin-label">Artista/Banda *</label>
             <input
-              style={styles.input}
+              className="admin-input"
               value={formData.artista}
               onChange={(e) => handleInputChange("artista", e.target.value)}
               placeholder="Nome do artista"
@@ -425,10 +349,10 @@ function AdminPanel() {
             />
           </div>
 
-          <div style={styles.col}>
-            <label style={styles.label}>Local *</label>
+          <div className="admin-col">
+            <label className="admin-label">Local *</label>
             <input
-              style={styles.input}
+              className="admin-input"
               value={formData.local}
               onChange={(e) => handleInputChange("local", e.target.value)}
               placeholder="Ex: Bar do João"
@@ -437,34 +361,34 @@ function AdminPanel() {
           </div>
         </div>
 
-        <div style={styles.row}>
-          <div style={styles.col}>
-            <label style={styles.label}>Data Início *</label>
+        <div className="admin-row">
+          <div className="admin-col">
+            <label className="admin-label">Data Início *</label>
             <input
               type="date"
-              style={styles.input}
+              className="admin-input"
               value={formData.data_inicio}
               onChange={(e) => handleInputChange("data_inicio", e.target.value)}
               required
             />
           </div>
 
-          <div style={styles.col}>
-            <label style={styles.label}>Data Fim (opcional)</label>
+          <div className="admin-col">
+            <label className="admin-label">Data Fim (opcional)</label>
             <input
               type="date"
-              style={styles.input}
+              className="admin-input"
               value={formData.data_fim}
               onChange={(e) => handleInputChange("data_fim", e.target.value)}
             />
           </div>
         </div>
 
-        <div style={styles.row}>
-          <div style={styles.col}>
-            <label style={styles.label}>Cidade *</label>
+        <div className="admin-row">
+          <div className="admin-col">
+            <label className="admin-label">Cidade *</label>
             <input
-              style={styles.input}
+              className="admin-input"
               value={formData.cidade}
               onChange={(e) => handleInputChange("cidade", e.target.value)}
               placeholder="Nome da cidade"
@@ -472,22 +396,28 @@ function AdminPanel() {
             />
           </div>
 
-          <div style={styles.col}>
-            <label style={styles.label}>Flyer (imagem)</label>
+          <div className="admin-col">
+            <label className="admin-label">Flyer (imagem)</label>
             <input
               type="file"
               accept="image/*"
-              style={styles.input}
+              className="admin-input"
               onChange={handleFileChange}
             />
             {selectedFile && (
-              <p style={{ fontSize: 12, color: '#4ade80', marginTop: 5 }}>
-                ✓ {selectedFile.name}
-              </p>
+              <p className="admin-file-name ok">✓ {selectedFile.name}</p>
             )}
             {formData.flyer && !selectedFile && (
-              <p style={{ fontSize: 12, color: '#60a5fa', marginTop: 5 }}>
-                📷 Imagem atual: <a href={formData.flyer} target="_blank" rel="noopener noreferrer" style={{ color: '#60a5fa' }}>Ver</a>
+              <p className="admin-file-name current">
+                📷 Imagem atual:{" "}
+                <a
+                  href={formData.flyer}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="admin-file-link"
+                >
+                  Ver
+                </a>
               </p>
             )}
           </div>
@@ -495,75 +425,78 @@ function AdminPanel() {
 
         <button
           type="submit"
-          style={styles.addButton}
+          className="admin-add-btn"
           disabled={uploadProgress}
         >
-          {uploadProgress ? "Enviando imagem..." : editingId ? "Salvar Alteração" : "Adicionar Show"}
+          {uploadProgress
+            ? "Enviando imagem..."
+            : editingId
+            ? "Salvar Alteração"
+            : "Adicionar Show"}
         </button>
 
         {editingId && (
-          <button
-            type="button"
-            onClick={resetForm}
-            style={styles.cancelButton}
-          >
+          <button type="button" onClick={resetForm} className="admin-cancel-btn">
             Cancelar
           </button>
         )}
       </form>
 
       {message && (
-        <div style={{
-          marginTop: 20,
-          padding: 15,
-          borderRadius: 8,
-          background: message.type === 'error' ? '#dc2626' : '#16a34a',
-          color: '#fff',
-          textAlign: 'center',
-          fontWeight: 'bold'
-        }}>
+        <div className={`admin-message ${message.type}`}>
           {message.text}
         </div>
-      )}    
+      )}
 
       {loading ? (
-        <p>Carregando...</p>
+        <p className="admin-loading-text">Carregando...</p>
       ) : (
-        <table style={styles.table}>
+        <table className="admin-table">
           <thead>
-            <tr style={styles.tableHeader}>
-              <th style={styles.th}>Artista</th>
-              <th style={styles.th}>Data Início</th>
-              <th style={styles.th}>Data Fim</th>
-              <th style={styles.th}>Local</th>
-              <th style={styles.th}>Cidade</th>
-              <th style={styles.th}>Flyer</th>
-              <th style={styles.th}>Ações</th>
+            <tr className="admin-table-header">
+              <th className="admin-th">Artista</th>
+              <th className="admin-th">Data Início</th>
+              <th className="admin-th">Data Fim</th>
+              <th className="admin-th">Local</th>
+              <th className="admin-th">Cidade</th>
+              <th className="admin-th">Flyer</th>
+              <th className="admin-th">Ações</th>
             </tr>
           </thead>
           <tbody>
             {shows.map((show) => (
-              <tr key={show.id} style={styles.tableRow}>
-                <td style={styles.td}>{show.artista}</td>
-                <td style={styles.td}>{formatDateToBR(show.data_inicio)}</td>
-                <td style={styles.td}>{formatDateToBR(show.data_fim)}</td>
-                <td style={styles.td}>{show.local}</td>
-                <td style={styles.td}>{show.cidade}</td>
-                <td style={styles.td}>
+              <tr key={show.id} className="admin-table-row">
+                <td className="admin-td">{show.artista}</td>
+                <td className="admin-td">{formatarData(show.data_inicio)}</td>
+                <td className="admin-td">{formatarData(show.data_fim)}</td>
+                <td className="admin-td">{show.local}</td>
+                <td className="admin-td">{show.cidade}</td>
+                <td className="admin-td">
                   {show.flyer ? (
-                    <a href={show.flyer} target="_blank" rel="noopener noreferrer" style={styles.link}>
+                    <a
+                      href={show.flyer}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="admin-link"
+                    >
                       Ver
                     </a>
                   ) : (
                     "-"
                   )}
                 </td>
-                <td style={styles.td}>
-                  <div style={styles.actionButtons}>
-                    <button onClick={() => editShow(show)} style={styles.editButton}>
+                <td className="admin-td">
+                  <div className="admin-actions">
+                    <button
+                      onClick={() => editShow(show)}
+                      className="admin-edit-btn"
+                    >
                       ✏️
                     </button>
-                    <button onClick={() => deleteShow(show.id)} style={styles.deleteButton}>
+                    <button
+                      onClick={() => deleteShow(show.id)}
+                      className="admin-delete-btn"
+                    >
                       🗑️
                     </button>
                   </div>
@@ -587,7 +520,9 @@ export default function AdminPage() {
       setLoading(false);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       setAuth(!!session);
     });
 
@@ -601,8 +536,8 @@ export default function AdminPage() {
 
   if (loading) {
     return (
-      <div style={styles.loginWrapper}>
-        <p style={{ color: '#fff' }}>Carregando...</p>
+      <div className="admin-login-wrapper">
+        <p className="admin-loading-text">Carregando...</p>
       </div>
     );
   }
@@ -611,170 +546,10 @@ export default function AdminPage() {
 
   return (
     <>
-      <button
-        onClick={handleLogout}
-        style={styles.logout}
-      >
+      <button onClick={handleLogout} className="admin-logout-btn">
         Sair
       </button>
       <AdminPanel />
     </>
   );
 }
-
-const styles = {
-  container: {
-    maxWidth: 1200,
-    margin: "0 auto",
-    padding: 30,
-    background: "#2b2b2b",
-    minHeight: "100vh",
-    color: "#fff",
-    fontFamily: "Arial, sans-serif"
-  },
-  title: {
-    textAlign: "center",
-    fontSize: 32,
-    marginBottom: 20,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 10
-  },
-  icon: {
-    fontSize: 36
-  },
-  form: {
-    background: "#363636",
-    padding: 25,
-    borderRadius: 8,
-    marginBottom: 30
-  },
-  label: {
-    display: "block",
-    marginBottom: 5,
-    marginTop: 10,
-    fontSize: 14,
-    color: "#ddd"
-  },
-  row: {
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr",
-    gap: 15
-  },
-  col: {
-    display: "flex",
-    flexDirection: "column"
-  },
-  input: {
-    padding: 12,
-    borderRadius: 5,
-    border: "1px solid #555",
-    background: "#fff",
-    fontSize: 14,
-    width: "100%",
-    boxSizing: "border-box"
-  },
-  addButton: {
-    padding: 12,
-    background: "#ffb347",
-    border: "none",
-    borderRadius: 5,
-    cursor: "pointer",
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#000",
-    marginTop: 15
-  },
-  cancelButton: {
-    padding: 12,
-    background: "#666",
-    border: "none",
-    borderRadius: 5,
-    cursor: "pointer",
-    fontSize: 16,
-    color: "#fff",
-    marginTop: 10
-  },
-  table: {
-    width: "100%",
-    borderCollapse: "collapse",
-    background: "#363636",
-    borderRadius: 8,
-    overflow: "hidden",
-    marginTop: 30
-  },
-  tableHeader: {
-    background: "#2b2b2b"
-  },
-  th: {
-    padding: 15,
-    textAlign: "left",
-    color: "#ffb347",
-    fontWeight: "bold",
-    fontSize: 14,
-    borderBottom: "2px solid #ffb347"
-  },
-  tableRow: {
-    borderBottom: "1px solid #444"
-  },
-  td: {
-    padding: 15,
-    fontSize: 14,
-    color: "#ddd"
-  },
-  link: {
-    color: "#60a5fa",
-    textDecoration: "none"
-  },
-  actionButtons: {
-    display: "flex",
-    gap: 10
-  },
-  editButton: {
-    padding: 8,
-    background: "#ffb347",
-    border: "none",
-    borderRadius: 5,
-    cursor: "pointer",
-    fontSize: 16
-  },
-  deleteButton: {
-    padding: 8,
-    background: "#ef4444",
-    border: "none",
-    borderRadius: 5,
-    cursor: "pointer",
-    fontSize: 16
-  },
-  loginWrapper: {
-    minHeight: "100vh",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    background: "#181818"
-  },
-  loginBox: {
-    background: "#2b2b2b",
-    padding: 40,
-    borderRadius: 8,
-    display: "flex",
-    flexDirection: "column",
-    gap: 15,
-    minWidth: 350
-  },
-  logout: {
-    position: "fixed",
-    top: 20,
-    right: 20,
-    padding: 12,
-    background: "#ef4444",
-    color: "#fff",
-    border: "none",
-    borderRadius: 5,
-    cursor: "pointer",
-    zIndex: 1000,
-    fontSize: 14,
-    fontWeight: "bold"
-  }
-};
