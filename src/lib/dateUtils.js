@@ -15,7 +15,7 @@ export function formatarData(dataISO) {
   return `${dia}/${mes}/${ano}`;
 }
 
-// Retorna string de exibição para intervalo de datas
+// Retorna string de exibicao para intervalo de datas
 export function mostrarData(show) {
   const inicio = parseISO(show.data_inicio);
   const fim    = parseISO(show.data_fim || show.data_inicio);
@@ -37,16 +37,16 @@ export function mostrarData(show) {
 
   const diffDays = Math.round((fim - inicio) / (1000 * 60 * 60 * 24));
 
-  // Meses ou anos diferentes ? mostra mês nos dois lados
+  // Meses ou anos diferentes -> mostra mes nos dois lados
   if (mI !== mF || aI !== aF) {
     return `${dI}/${mI} a ${dF}/${mF}/${aF}`;
   }
 
-  // Mesmo mês, 1 dia de diferença ? "05 e 06/06/2026"
+  // Mesmo mes, 1 dia de diferenca -> "05 e 06/06/2026"
   if (diffDays === 1) {
     return `${dI} e ${dF}/${mF}/${aF}`;
   }
 
-  // Mesmo mês, 2+ dias ? "05 a 07/06/2026"
+  // Mesmo mes, 2+ dias -> "05 a 07/06/2026"
   return `${dI} a ${dF}/${mF}/${aF}`;
 }
