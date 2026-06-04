@@ -30,19 +30,27 @@ export function mostrarData(show) {
   const mF = pad(fim.getMonth() + 1);
   const aF = fim.getFullYear();
 
-  if (inicio.getTime() === fim.getTime()) {
+  // Mesmo dia
+  if (dI === dF && mI === mF && aI === aF) {
     return `${dI}/${mI}/${aI}`;
   }
 
-  const diffDays = Math.round((fim - inicio) / (1000 * 60 * 60 * 24));
+  // Calcula diferenca em dias sem depender de milissegundos
+  const msPerDay = 1000 * 60 * 60 * 24;
+  const inicioUTC = Date.UTC(inicio.getFullYear(), inicio.getMonth(), inicio.getDate());
+  const fimUTC    = Date.UTC(fim.getFullYear(),    fim.getMonth(),    fim.getDate());
+  const diffDays  = Math.round((fimUTC - inicioUTC) / msPerDay);
 
+  // Meses ou anos diferentes
   if (mI !== mF || aI !== aF) {
     return `${dI}/${mI} a ${dF}/${mF}/${aF}`;
   }
 
+  // Mesmo mes, 1 dia de diferenca
   if (diffDays === 1) {
     return `${dI} e ${dF}/${mF}/${aF}`;
   }
 
+  // Mesmo mes, 2+ dias
   return `${dI} a ${dF}/${mF}/${aF}`;
 }
