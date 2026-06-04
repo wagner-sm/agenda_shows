@@ -30,23 +30,19 @@ export function mostrarData(show) {
   const mF = pad(fim.getMonth() + 1);
   const aF = fim.getFullYear();
 
-  // Mesmo dia
   if (inicio.getTime() === fim.getTime()) {
     return `${dI}/${mI}/${aI}`;
   }
 
   const diffDays = Math.round((fim - inicio) / (1000 * 60 * 60 * 24));
 
-  // Meses ou anos diferentes -> mostra mes nos dois lados
   if (mI !== mF || aI !== aF) {
     return `${dI}/${mI} a ${dF}/${mF}/${aF}`;
   }
 
-  // Mesmo mes, 1 dia de diferenca -> "05 e 06/06/2026"
   if (diffDays === 1) {
     return `${dI} e ${dF}/${mF}/${aF}`;
   }
 
-  // Mesmo mes, 2+ dias -> "05 a 07/06/2026"
   return `${dI} a ${dF}/${mF}/${aF}`;
 }
