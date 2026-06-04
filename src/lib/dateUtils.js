@@ -17,7 +17,36 @@ export function formatarData(dataISO) {
 
 // Retorna string de exibição para intervalo de datas
 export function mostrarData(show) {
-  const inicio = formatarData(show.data_inicio);
-  if (show.data_inicio === show.data_fim || !show.data_fim) return inicio;
-  return `${inicio} a ${formatarData(show.data_fim)}`;
+  const inicio = parseISO(show.data_inicio);
+  const fim    = parseISO(show.data_fim || show.data_inicio);
+
+  const pad = (n) => String(n).padStart(2, "0");
+
+  const dI = pad(inicio.getDate());
+  const mI = pad(inicio.getMonth() + 1);
+  const aI = inicio.getFullYear();
+
+  const dF = pad(fim.getDate());
+  const mF = pad(fim.getMonth() + 1);
+  const aF = fim.getFullYear();
+
+  // Mesmo dia
+  if (inicio.getTime() === fim.getTime()) {
+    return `${dI}/${mI}/${aI}`;
+  }
+
+  const diffDays = Math.round((fim - inicio) / (1000 * 60 * 60 * 24));
+
+  // Meses ou anos diferentes ? mostra mês nos dois lados
+  if (mI !== mF || aI !== aF) {
+    return `${dI}/${mI} a ${dF}/${mF}/${aF}`;
+  }
+
+  // Mesmo mês, 1 dia de diferença ? "05 e 06/06/2026"
+  if (diffDays === 1) {
+    return `${dI} e ${dF}/${mF}/${aF}`;
+  }
+
+  // Mesmo mês, 2+ dias ? "05 a 07/06/2026"
+  return `${dI} a ${dF}/${mF}/${aF}`;
 }
