@@ -1,27 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
+import { mostrarData } from "../lib/dateUtils";
 
-// Função para converter data ISO (yyyy-mm-dd) para formato brasileiro (dd/mm/yyyy)
-function formatarData(dataISO) {
-  if (!dataISO) return '';
-  const data = new Date(`${dataISO}T00:00:00`);
-  const dia = String(data.getDate()).padStart(2, '0');
-  const mes = String(data.getMonth() + 1).padStart(2, '0');
-  const ano = data.getFullYear();
-  return `${dia}/${mes}/${ano}`;
-}
-
-function mostrarData(show) {
-  const dataInicioFormatada = formatarData(show.data_inicio);
-  const dataFimFormatada = formatarData(show.data_fim);
-
-  if (show.data_inicio === show.data_fim || !show.data_fim) {
-    return dataInicioFormatada;
-  } else {
-    return `${dataInicioFormatada} a ${dataFimFormatada}`;
-  }
-}
+const FALLBACK_IMG =
+  "https://placehold.co/320x300/333/ffb347?text=Imagem+IndisponÃ­vel";
 
 export default function ShowCard({ show, onImageClick }) {
+  const [imgLoaded, setImgLoaded] = useState(false);
+
   return (
     <div className="show-card" tabIndex={0}>
       <img
@@ -29,8 +14,9 @@ export default function ShowCard({ show, onImageClick }) {
         alt={`Flyer do show de ${show.artista} em ${show.cidade}`}
         loading="lazy"
         onClick={() => onImageClick(show.flyer)}
-        onError={e => (e.target.src = "https://placehold.co/320x300/333/ffb347?text=Imagem+Indisponível")}
-        className="loaded"
+        onError={(e) => (e.target.src = FALLBACK_IMG)}
+        onLoad={() => setImgLoaded(true)}
+        className={imgLoaded ? "loaded" : ""}
       />
       <div className="show-info">
         <h2>{show.artista}</h2>
