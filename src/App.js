@@ -20,7 +20,16 @@ function ShowsPage() {
 
   const backToTopRef = useRef(null);
 
-  const fetchShows = useCallback(async (signal) => {
+  const abortRef = useRef(null);
+
+  const loadShows = useCallback(async () => {
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+
+    setLoading(true);
+    setError(null);
+
     try {
       const response = await fetch(
         `${SUPABASE_URL}/rest/v1/shows?select=*`,
@@ -29,7 +38,7 @@ function ShowsPage() {
             apikey: SUPABASE_ANON_KEY,
             Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
           },
-          signal,
+          signal: controller.signal,
         }
       );
 
@@ -37,75 +46,56 @@ function ShowsPage() {
         throw new Error(`Erro HTTP: ${response.status}`);
       }
 
-      return await response.json();
+      const data = await response.json();
+
+      if (!controller.signal.aborted) {
+        const hoje = new Date();
+        hoje.setHours(0, 0, 0, 0);
+
+        const showsProcessados = data
+          .map((show) => ({
+            ...show,
+            data_fim: show.data_fim || show.data_inicio,
+          }))
+          .sort((a, b) => {
+            const dataA = parseISO(a.data_inicio);
+            const dataB = parseISO(b.data_inicio);
+
+            if (dataA.getTime() !== dataB.getTime()) {
+              return dataA - dataB;
+            }
+
+            const cidadeCmp = (a.cidade || "").localeCompare(b.cidade || "", "pt-BR", {
+              sensitivity: "base",
+              ignorePunctuation: true,
+            });
+
+            if (cidadeCmp !== 0) return cidadeCmp;
+
+            return a.artista.localeCompare(b.artista, "pt-BR", {
+              sensitivity: "base",
+              ignorePunctuation: true,
+            });
+          })
+          .filter((show) => {
+            const dataFim = parseISO(show.data_fim);
+            return dataFim >= hoje;
+          });
+
+        setShows(showsProcessados);
+        setLoading(false);
+      }
     } catch (err) {
       if (err.name !== "AbortError") {
         setError(err.message);
+        setLoading(false);
       }
-      return [];
     }
   }, []);
 
-  const loadShows = useCallback(async () => {
-    const abortController = new AbortController();
-
-    setLoading(true);
-    setError(null);
-
-    const data = await fetchShows(abortController.signal);
-
-    if (!abortController.signal.aborted) {
-      const hoje = new Date();
-      hoje.setHours(0, 0, 0, 0);
-
-      const showsProcessados = data
-        .map((show) => ({
-          ...show,
-          data_fim: show.data_fim || show.data_inicio,
-        }))
-        .sort((a, b) => {
-          const dataA = parseISO(a.data_inicio);
-          const dataB = parseISO(b.data_inicio);
-
-          if (dataA.getTime() !== dataB.getTime()) {
-            return dataA - dataB;
-          }
-
-          const cidadeCmp = (a.cidade || "").localeCompare(b.cidade || "", "pt-BR", {
-            sensitivity: "base",
-            ignorePunctuation: true,
-          });
-
-          if (cidadeCmp !== 0) return cidadeCmp;
-
-          return a.artista.localeCompare(b.artista, "pt-BR", {
-            sensitivity: "base",
-            ignorePunctuation: true,
-          });
-        })
-        .filter((show) => {
-          const dataFim = parseISO(show.data_fim);
-          return dataFim >= hoje;
-        });
-
-      setShows(showsProcessados);
-      setLoading(false);
-    }
-
-    return abortController;
-  }, [fetchShows]);
-
-  // Carrega os shows na montagem
   useEffect(() => {
-    let abortController;
-
-    loadShows().then((ac) => {
-      abortController = ac;
-    });
-
-    return () => {
-      if (abortController) abortController.abort();
-    };
+    loadShows();
+    return () => abortRef.current?.abort();
   }, [loadShows]);
 
   // Tema claro / escuro
