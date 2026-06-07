@@ -12,29 +12,41 @@ function prepararValor(valor) {
   return valorString === "" ? null : valorString;
 }
 
+function readFileAsBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64 = reader.result.split(",")[1];
+      resolve(base64);
+    };
+    reader.onerror = () => reject(new Error("Erro ao ler arquivo"));
+    reader.readAsDataURL(file);
+  });
+}
+
 async function uploadToSupabase(file) {
   const fileExt = file.name.split(".").pop();
   const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${fileExt}`;
 
-  const { error: uploadError } = await supabase.storage
-    .from(STORAGE_BUCKET)
-    .upload(fileName, file, {
-      upsert: false,
+  const { data: { session } } = await supabase.auth.getSession();
+
+  const base64 = await readFileAsBase64(file);
+
+  const response = await fetch("/api/upload-flyer", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      fileName,
+      file: base64,
       contentType: file.type,
-      cacheControl: "no-cache",
-    });
+      token: session.access_token,
+    }),
+  });
 
-  if (uploadError) throw uploadError;
+  const result = await response.json();
+  if (!response.ok) throw new Error(result.error);
 
-  const { data } = supabase.storage
-    .from(STORAGE_BUCKET)
-    .getPublicUrl(fileName);
-
-  if (!data?.publicUrl) {
-    throw new Error("Falha ao gerar URL pública");
-  }
-
-  return { url: data.publicUrl, path: fileName };
+  return { url: result.url, path: result.path };
 }
 
 async function deleteFromSupabase(filePath) {
