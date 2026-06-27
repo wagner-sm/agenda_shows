@@ -4,7 +4,6 @@ import "./App.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import ShowCard from "./components/ShowCard";
 import ImageModal from "./components/ImageModal";
-import AdminPage from "./AdminPage";
 import { parseISO } from "./lib/dateUtils";
 
 const SUPABASE_URL = process.env.REACT_APP_SUPABASE_URL;
@@ -190,7 +189,6 @@ export default function App() {
     <Router>
       <Routes>
         <Route path="/" element={<ShowsPage />} />
-        <Route path="/admin" element={<AdminPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
