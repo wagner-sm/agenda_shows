@@ -133,19 +133,35 @@ function ShowsPage() {
         id="toggleTheme"
         onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
         title="Alternar tema"
+        aria-label="Alternar tema claro e escuro"
       >
         <i className={theme === "dark" ? "fas fa-moon" : "fas fa-sun"}></i>
       </button>
 
-      <h1>Agenda de Shows</h1>
+      <header className="page-header">
+        <h1>Agenda de Shows</h1>
+      </header>
 
       <div className="shows-list" id="shows">
-        {loading && (
-          <p className="status-message loading-message">Carregando shows...</p>
-        )}
+        {loading &&
+          Array.from({ length: 8 }).map((_, index) => (
+            <div
+              className="show-card skeleton-card"
+              key={index}
+              aria-hidden="true"
+            >
+              <div className="skeleton sk-img"></div>
+              <div className="show-info">
+                <div className="skeleton sk-line" style={{ width: "55%" }}></div>
+                <div className="skeleton sk-line" style={{ width: "80%" }}></div>
+                <div className="skeleton sk-line" style={{ width: "70%" }}></div>
+              </div>
+            </div>
+          ))}
 
         {error && (
-          <div className="status-message error-container">
+          <div className="status-message error-container" role="alert">
+            <i className="fa-solid fa-triangle-exclamation empty-icon"></i>
             <p>Erro ao carregar os shows: {error}</p>
             <button className="retry-btn" onClick={handleRetry}>
               Tentar Novamente
@@ -154,9 +170,10 @@ function ShowsPage() {
         )}
 
         {!loading && !error && shows.length === 0 && (
-          <p className="status-message empty-message">
-            Nenhum show cadastrado no momento.
-          </p>
+          <div className="status-message empty-message">
+            <i className="fa-solid fa-calendar-xmark empty-icon"></i>
+            <p>Nenhum show cadastrado no momento.</p>
+          </div>
         )}
 
         {!loading &&
@@ -166,6 +183,7 @@ function ShowsPage() {
               key={show.id || `${show.artista}-${show.data_inicio}-${show.cidade}-${index}`}
               show={show}
               onImageClick={setModalImg}
+              style={{ animationDelay: `${Math.min(index, 9) * 45}ms` }}
             />
           ))}
       </div>
@@ -176,6 +194,7 @@ function ShowsPage() {
         id="backToTop"
         ref={backToTopRef}
         title="Voltar ao topo"
+        aria-label="Voltar ao topo"
         onClick={handleBackToTop}
       >
         <i className="fas fa-arrow-up"></i>
