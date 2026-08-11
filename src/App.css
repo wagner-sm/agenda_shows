@@ -95,7 +95,6 @@ h1 {
   flex-direction: column;
   background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: var(--shadow-card);
   outline: none;
@@ -335,7 +334,6 @@ h1 {
   max-width: min(92vw, 1100px);
   max-height: 88vh;
   object-fit: contain;
-  border-radius: var(--radius-md);
   border: 1px solid var(--border);
   box-shadow: 0 30px 90px rgba(0, 0, 0, 0.65);
 }
