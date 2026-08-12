@@ -15,8 +15,31 @@ export function formatarData(dataISO) {
   return `${dia}/${mes}/${ano}`;
 }
 
+// Formata uma lista de datas ISO do mesmo mes/ano como "13, 15 e 20/08/2026"
+function formatarDatasMultiplas(datasISO) {
+  const pad = (n) => String(n).padStart(2, "0");
+
+  const dias = datasISO.map((iso) => pad(parseISO(iso).getDate()));
+
+  const primeira = parseISO(datasISO[0]);
+  const mes = pad(primeira.getMonth() + 1);
+  const ano = primeira.getFullYear();
+
+  const diasTexto =
+    dias.length === 2
+      ? `${dias[0]} e ${dias[1]}`
+      : `${dias.slice(0, -1).join(", ")} e ${dias[dias.length - 1]}`;
+
+  return `${diasTexto}/${mes}/${ano}`;
+}
+
 // Retorna string de exibicao para intervalo de datas
 export function mostrarData(show) {
+  // Show resultante da fusao de varias datas avulsas no mesmo mes/ano
+  if (Array.isArray(show.datasMultiplas) && show.datasMultiplas.length > 1) {
+    return formatarDatasMultiplas(show.datasMultiplas);
+  }
+
   const inicio = parseISO(show.data_inicio);
   const fim    = parseISO(show.data_fim || show.data_inicio);
 

@@ -9,6 +9,80 @@ import { parseISO } from "./lib/dateUtils";
 const SUPABASE_URL = process.env.REACT_APP_SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.REACT_APP_SUPABASE_ANON_KEY;
 
+// Remove acentos e normaliza para comparar artista/local/cidade
+function normalizarChave(str) {
+  return (str || "")
+    .toString()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim();
+}
+
+// Funde shows do mesmo artista + local + cidade, sem intervalo proprio
+// (evento de um dia), quando caem no mesmo mes/ano.
+// Datas em meses diferentes permanecem como shows separados (nada muda).
+function mesclarShowsMesmoMes(shows) {
+  const candidatos = [];
+  const naoCandidatos = [];
+
+  shows.forEach((show) => {
+    if (show.data_inicio === show.data_fim) {
+      candidatos.push(show);
+    } else {
+      naoCandidatos.push(show);
+    }
+  });
+
+  const grupos = new Map();
+  candidatos.forEach((show) => {
+    const chave = `${normalizarChave(show.artista)}|${normalizarChave(
+      show.local
+    )}|${normalizarChave(show.cidade)}`;
+    if (!grupos.has(chave)) grupos.set(chave, []);
+    grupos.get(chave).push(show);
+  });
+
+  const resultado = [...naoCandidatos];
+
+  grupos.forEach((showsDoGrupo) => {
+    if (showsDoGrupo.length === 1) {
+      resultado.push(showsDoGrupo[0]);
+      return;
+    }
+
+    const porMes = new Map();
+    showsDoGrupo.forEach((show) => {
+      const d = parseISO(show.data_inicio);
+      const chaveMes = `${d.getFullYear()}-${d.getMonth()}`;
+      if (!porMes.has(chaveMes)) porMes.set(chaveMes, []);
+      porMes.get(chaveMes).push(show);
+    });
+
+    porMes.forEach((showsDoMes) => {
+      if (showsDoMes.length === 1) {
+        resultado.push(showsDoMes[0]);
+        return;
+      }
+
+      const ordenados = [...showsDoMes].sort(
+        (a, b) => parseISO(a.data_inicio) - parseISO(b.data_inicio)
+      );
+      const datas = ordenados.map((s) => s.data_inicio);
+
+      resultado.push({
+        ...ordenados[0],
+        data_inicio: datas[0],
+        data_fim: datas[datas.length - 1],
+        datasMultiplas: datas,
+        flyersMultiplos: ordenados.map((s) => s.flyer).filter(Boolean),
+      });
+    });
+  });
+
+  return resultado;
+}
+
 //rebuild
 function ShowsPage() {
   const [shows, setShows] = useState([]);
@@ -51,11 +125,14 @@ function ShowsPage() {
         const hoje = new Date();
         hoje.setHours(0, 0, 0, 0);
 
-        const showsProcessados = data
-          .map((show) => ({
-            ...show,
-            data_fim: show.data_fim || show.data_inicio,
-          }))
+        const showsComFimPadrao = data.map((show) => ({
+          ...show,
+          data_fim: show.data_fim || show.data_inicio,
+        }));
+
+        const showsMesclados = mesclarShowsMesmoMes(showsComFimPadrao);
+
+        const showsProcessados = showsMesclados
           .sort((a, b) => {
             const dataA = parseISO(a.data_inicio);
             const dataB = parseISO(b.data_inicio);
